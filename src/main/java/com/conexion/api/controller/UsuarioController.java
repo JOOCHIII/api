@@ -33,4 +33,16 @@ public class UsuarioController {
     public void deleteUsuario(@PathVariable Long id) {
         usuarioRepository.deleteById(id);
     }
+    @PostMapping("/login")
+    public String login(@RequestParam String usuario, @RequestParam String contrasena) {
+        Usuario usuarioEncontrado = usuarioRepository.findByUsuario(usuario);
+
+        if (usuarioEncontrado == null) {
+            return "USUARIO_NO_EXISTE";
+        } else if (!usuarioEncontrado.getContrasena().equals(contrasena)) {
+            return "CONTRASENA_INCORRECTA";
+        } else {
+            return "ACCESO_CONCEDIDO";
+        }
+    }
 }
