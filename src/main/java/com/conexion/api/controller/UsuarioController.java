@@ -3,6 +3,7 @@ package com.conexion.api.controller;
 import com.conexion.api.model.Usuario;
 import com.conexion.api.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -45,4 +46,35 @@ public class UsuarioController {
             return "ACCESO_CONCEDIDO";
         }
     }
+
+    @PostMapping("/registro")
+    public String registrarUsuario(
+        @RequestParam String nombrecompleto,
+        @RequestParam String correo,
+        @RequestParam String telefono,
+        @RequestParam String usuario,
+        @RequestParam String contrasena
+    ) {
+        if (usuarioRepository.existsByUsuario(usuario)) {
+            return "Usuario ya registrado";
+        }
+        if (usuarioRepository.existsByCorreo(correo)) {
+            return "Correo ya registrado";
+        }
+        if (usuarioRepository.existsByTelefono(telefono)) {
+            return "Teléfono ya registrado";
+        }
+
+        Usuario nuevoUsuario = new Usuario();
+        nuevoUsuario.setNombrecompleto(nombrecompleto);
+        nuevoUsuario.setCorreo(correo);
+        nuevoUsuario.setTelefono(telefono);
+        nuevoUsuario.setUsuario(usuario);
+        nuevoUsuario.setContrasena(contrasena);
+
+        usuarioRepository.save(nuevoUsuario);
+        return "Usuario registrado correctamente";
+    }
+
+
 }

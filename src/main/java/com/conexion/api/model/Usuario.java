@@ -1,5 +1,7 @@
 package com.conexion.api.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -8,6 +10,8 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
+    @JsonProperty("nombreCompleto")
 
     @Column(nullable = false)
     private String nombrecompleto;
@@ -42,4 +46,6 @@ public class Usuario {
 
     public String getContrasena() { return contrasena; }
     public void setContrasena(String contrasena) { this.contrasena = contrasena; }
+
+    
 }
