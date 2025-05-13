@@ -33,4 +33,51 @@ public class AdministradorController {
     public void deleteAdministrador(@PathVariable Long id) {
         administradorRepository.deleteById(id);
     }
+    @PostMapping("/login")
+    public String loginAdministrador(@RequestParam String usuarioadmin, @RequestParam String contrasenaadmin) {
+        Administrador admin = administradorRepository.findByUsuarioadmin(usuarioadmin);
+
+        if (admin == null) {
+            return "USUARIO_NO_EXISTE";
+        } else if (!admin.getContrasenaAdmin().equals(contrasenaadmin)) {
+            return "CONTRASENA_INCORRECTA";
+        } else {
+            return "ACCESO_CONCEDIDO";
+        }
+    }
+    @PostMapping("/registro")
+    public String registrarAdministrador(
+            @RequestParam String nombrecompletoadmin,
+            @RequestParam String correoadmin,
+            @RequestParam String telefonoadmin,
+            @RequestParam String usuarioadmin,
+            @RequestParam String contrasenaadmin) {
+
+        if (administradorRepository.findByUsuarioadmin(usuarioadmin) != null) {
+            return "Usuario ya registrado";
+        }
+
+        if (administradorRepository.findByCorreoadmin(correoadmin) != null) {
+            return "Correo ya registrado";
+        }
+
+        if (telefonoadmin != null && !telefonoadmin.isEmpty()) {
+            List<Administrador> admins = administradorRepository.findAll();
+            for (Administrador a : admins) {
+                if (telefonoadmin.equals(a.getTelefonoAdmin())) {
+                    return "Teléfono ya registrado";
+                }
+            }
+        }
+
+        Administrador administrador = new Administrador();
+        administrador.setNombrecompletoAdmin(nombrecompletoadmin);
+        administrador.setCorreoAdmin(correoadmin);
+        administrador.setTelefonoAdmin(telefonoadmin);
+        administrador.setUsuarioAdmin(usuarioadmin);
+        administrador.setContrasenaAdmin(contrasenaadmin);
+
+        administradorRepository.save(administrador);
+        return "Administrador registrado correctamente";
+    }
 }
