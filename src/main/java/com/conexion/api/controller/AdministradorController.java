@@ -26,32 +26,46 @@ public class AdministradorController {
 
     @GetMapping("/{id}")
     public Administrador getAdministradorById(@PathVariable Long id) {
-        return administradorRepository.findById(id).orElseThrow(() -> new RuntimeException("Administrador no encontrado"));
+        return administradorRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Administrador no encontrado"));
     }
 
     @DeleteMapping("/{id}")
     public void deleteAdministrador(@PathVariable Long id) {
         administradorRepository.deleteById(id);
     }
+
     @PostMapping("/login")
-    public String loginAdministrador(@RequestParam String usuarioadmin, @RequestParam String contrasenaadmin) {
+    public String loginAdministrador(
+            @RequestParam String usuarioadmin,
+            @RequestParam String contrasenaadmin,
+            @RequestParam String origen_app) {
+
         Administrador admin = administradorRepository.findByUsuarioadmin(usuarioadmin);
 
         if (admin == null) {
             return "USUARIO_NO_EXISTE";
-        } else if (!admin.getContrasenaAdmin().equals(contrasenaadmin)) {
-            return "CONTRASENA_INCORRECTA";
-        } else {
-            return "ACCESO_CONCEDIDO";
         }
+
+        if (!admin.getContrasenaAdmin().equals(contrasenaadmin)) {
+            return "CONTRASENA_INCORRECTA";
+        }
+
+        if (!admin.getOrigenApp().equals(origen_app)) {
+            return "ACCESO_DENEGADO_ORIGEN_APP";
+        }
+
+        return "ACCESO_CONCEDIDO";
     }
+
     @PostMapping("/registro")
     public String registrarAdministrador(
             @RequestParam String nombrecompletoadmin,
             @RequestParam String correoadmin,
             @RequestParam String telefonoadmin,
             @RequestParam String usuarioadmin,
-            @RequestParam String contrasenaadmin) {
+            @RequestParam String contrasenaadmin,
+            @RequestParam String origen_app) {
 
         if (administradorRepository.findByUsuarioadmin(usuarioadmin) != null) {
             return "Usuario ya registrado";
@@ -76,6 +90,7 @@ public class AdministradorController {
         administrador.setTelefonoAdmin(telefonoadmin);
         administrador.setUsuarioAdmin(usuarioadmin);
         administrador.setContrasenaAdmin(contrasenaadmin);
+        administrador.setOrigenApp(origen_app);
 
         administradorRepository.save(administrador);
         return "Administrador registrado correctamente";

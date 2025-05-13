@@ -8,6 +8,7 @@ public class Administrador {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
 
     @Column(name = "nombrecompletoadmin", nullable = false)
     private String nombrecompletoadmin;
@@ -23,7 +24,11 @@ public class Administrador {
 
     @Column(name = "contrasenaadmin", nullable = false)
     private String contrasenaadmin;
+    
+    @Column(name = "origen_app", nullable = false)
+    private String origenApp;
 
+ 
     // Getters y setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -42,4 +47,7 @@ public class Administrador {
 
     public String getContrasenaAdmin() { return contrasenaadmin; }
     public void setContrasenaAdmin(String contrasenaadmin) { this.contrasenaadmin = contrasenaadmin; }
+    
+    public String getOrigenApp() { return origenApp; }
+    public void setOrigenApp(String origenApp) { this.origenApp = origenApp; }
 }

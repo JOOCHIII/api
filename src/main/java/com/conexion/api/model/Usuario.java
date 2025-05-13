@@ -27,6 +27,11 @@ public class Usuario {
 
     @Column(nullable = false)
     private String contrasena;
+    
+   
+    @Column(name = "origen_app", nullable = false)
+    private String origenApp;
+
 
     // Getters y setters
     public Long getId() { return id; }
@@ -46,6 +51,9 @@ public class Usuario {
 
     public String getContrasena() { return contrasena; }
     public void setContrasena(String contrasena) { this.contrasena = contrasena; }
+    
+    public String getOrigenApp() { return origenApp; }
+    public void setOrigenApp(String origenApp) { this.origenApp = origenApp; }
 
     
 }

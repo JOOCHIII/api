@@ -35,17 +35,26 @@ public class UsuarioController {
         usuarioRepository.deleteById(id);
     }
     @PostMapping("/login")
-    public String login(@RequestParam String usuario, @RequestParam String contrasena) {
+    public String login(@RequestParam String usuario, @RequestParam String contrasena,
+            @RequestParam String origen_app) {
+
         Usuario usuarioEncontrado = usuarioRepository.findByUsuario(usuario);
 
         if (usuarioEncontrado == null) {
             return "USUARIO_NO_EXISTE";
-        } else if (!usuarioEncontrado.getContrasena().equals(contrasena)) {
-            return "CONTRASENA_INCORRECTA";
-        } else {
-            return "ACCESO_CONCEDIDO";
         }
+
+        if (!usuarioEncontrado.getContrasena().equals(contrasena)) {
+            return "CONTRASENA_INCORRECTA";
+        }
+
+        if (!usuarioEncontrado.getOrigenApp().equals(origen_app)) {
+            return "ACCESO_DENEGADO_ORIGEN_APP";
+        }
+
+        return "ACCESO_CONCEDIDO";
     }
+
 
     @PostMapping("/registro")
     public String registrarUsuario(
@@ -53,8 +62,8 @@ public class UsuarioController {
         @RequestParam String correo,
         @RequestParam String telefono,
         @RequestParam String usuario,
-        @RequestParam String contrasena
-    ) {
+        @RequestParam String contrasena,
+        @RequestParam String origen_app) {
         if (usuarioRepository.existsByUsuario(usuario)) {
             return "Usuario ya registrado";
         }
@@ -71,6 +80,7 @@ public class UsuarioController {
         nuevoUsuario.setTelefono(telefono);
         nuevoUsuario.setUsuario(usuario);
         nuevoUsuario.setContrasena(contrasena);
+        nuevoUsuario.setOrigenApp(origen_app);
 
         usuarioRepository.save(nuevoUsuario);
         return "Usuario registrado correctamente";
