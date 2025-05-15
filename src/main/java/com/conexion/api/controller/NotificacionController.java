@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.conexion.api.model.Notificacion;
 import com.conexion.api.repository.NotificacionRepository;
 @RestController
-@RequestMapping("/api/notificaciones")
+@RequestMapping("/api/notificacion")
 public class NotificacionController {
 
     @Autowired
