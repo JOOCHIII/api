@@ -18,7 +18,7 @@ import com.conexion.api.repository.NotificacionRepository;
 import com.conexion.api.repository.ReporteRepository;
 
 @RestController
-@RequestMapping("/reportes")
+@RequestMapping("/api/reportes")
 public class ReporteController {
 
     @Autowired
