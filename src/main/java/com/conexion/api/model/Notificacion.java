@@ -36,7 +36,7 @@ public class Notificacion {
 	}
 	public boolean isLeido() {
 		return leido;
-	}
+	}	
 	public void setLeido(boolean leido) {
 		this.leido = leido;
 	}
