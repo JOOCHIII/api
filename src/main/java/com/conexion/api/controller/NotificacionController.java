@@ -6,14 +6,11 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.conexion.api.model.Notificacion;
 import com.conexion.api.repository.NotificacionRepository;
+
 @RestController
 @RequestMapping("/api/notificacion")
 public class NotificacionController {
@@ -21,13 +18,17 @@ public class NotificacionController {
     @Autowired
     private NotificacionRepository notiRepo;
 
+    // Obtener notificaciones por usuario y tipoDestino (ej: tienda o incidencias)
     @GetMapping("/usuario")
-    public List<Notificacion> obtenerNotificaciones(
-            @RequestParam int id_usuario,
-            @RequestParam String tipoDestino) {
-        return notiRepo.findByIdUsuarioAndTipoDestinoOrderByFechaDesc(id_usuario, tipoDestino);
+    public ResponseEntity<List<Notificacion>> obtenerNotificaciones(
+            @RequestParam("id_usuario") int idUsuario,
+            @RequestParam("tipoDestino") String tipoDestino) {
+        
+        List<Notificacion> notificaciones = notiRepo.findByIdUsuarioAndTipoDestinoOrderByFechaDesc(idUsuario, tipoDestino);
+        return ResponseEntity.ok(notificaciones);
     }
 
+    // Marcar una notificación como leída por ID
     @PutMapping("/leida")
     public ResponseEntity<String> marcarComoLeida(@RequestParam int id) {
         Optional<Notificacion> noti = notiRepo.findById(id);
@@ -41,4 +42,3 @@ public class NotificacionController {
         }
     }
 }
-	
