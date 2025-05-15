@@ -14,7 +14,7 @@ import com.conexion.api.repository.NotificacionRepository;
 import com.conexion.api.repository.ReporteRepository;
 
 @RestController
-@RequestMapping("/api/reportes")
+@RequestMapping("/api/reporte")
 public class ReporteController {
 
     @Autowired
@@ -37,7 +37,7 @@ public class ReporteController {
         reporte.setEstado("pendiente");
         reporte.setFechaCreacion(new Timestamp(System.currentTimeMillis()));
 
-        Reporte reporteGuardado = reporteRepo.save(reporte);
+        reporteRepo.save(reporte);
 
         // Notificación para el admin
         Notificacion notiAdmin = new Notificacion();
