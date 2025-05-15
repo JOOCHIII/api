@@ -1,5 +1,6 @@
 package com.conexion.api.controller;
 
+import java.sql.Timestamp;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import com.conexion.api.model.Notificacion;
 import com.conexion.api.model.Reporte;
 import com.conexion.api.repository.NotificacionRepository;
 import com.conexion.api.repository.ReporteRepository;
+
 @RestController
 @RequestMapping("/reportes")
 public class ReporteController {
@@ -36,14 +38,17 @@ public class ReporteController {
         reporte.setAsunto(asunto);
         reporte.setDescripcion(descripcion);
         reporte.setEstado("pendiente");
+        reporte.setFechaCreacion(new Timestamp(System.currentTimeMillis())); // ✅
+
         reporteRepo.save(reporte);
 
         // Notificación para el admin
         Notificacion noti = new Notificacion();
-        noti.setIdUsuario(1); // ID de admin o loop si hay varios
+        noti.setIdUsuario(1); // Usa un ID válido
         noti.setMensaje("Nuevo reporte creado: " + asunto);
         noti.setLeido(false);
         noti.setTipoDestino("incidencias");
+        noti.setFecha(new Timestamp(System.currentTimeMillis())); // ✅
         notiRepo.save(noti);
 
         return ResponseEntity.ok("Reporte creado y notificado al admin");
@@ -66,6 +71,7 @@ public class ReporteController {
             noti.setMensaje("Tu reporte '" + r.getAsunto() + "' ahora está " + nuevo_estado);
             noti.setLeido(false);
             noti.setTipoDestino("tienda");
+            noti.setFecha(new Timestamp(System.currentTimeMillis())); // ✅
             notiRepo.save(noti);
 
             return ResponseEntity.ok("Estado actualizado y notificado al usuario");
@@ -74,4 +80,3 @@ public class ReporteController {
         }
     }
 }
-

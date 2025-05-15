@@ -1,7 +1,4 @@
 package com.conexion.api.model;
-
-
-
 import java.sql.Timestamp;
 
 import jakarta.persistence.Entity;
