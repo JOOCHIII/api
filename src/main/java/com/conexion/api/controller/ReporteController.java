@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.conexion.api.dto.ReporteDTO;
 import com.conexion.api.model.Notificacion;
 import com.conexion.api.model.Reporte;
 import com.conexion.api.repository.NotificacionRepository;
@@ -23,35 +24,36 @@ public class ReporteController {
     @Autowired
     private NotificacionRepository notiRepo;
 
-    // Crear reporte y notificar a admin y usuario creador
+    private static final int ADMIN_ID = 1; // Cambiar si tienes admin dinámico
+
+    // ✅ Crear un nuevo reporte y notificar
     @PostMapping("/crear")
-    public ResponseEntity<String> crearReporte(
-        @RequestParam int id_usuario,
-        @RequestParam String asunto,
-        @RequestParam String descripcion
-    ) {
+    public ResponseEntity<String> crearReporte(@RequestBody ReporteDTO datos) {
+        if (datos.getAsunto() == null || datos.getDescripcion() == null) {
+            return ResponseEntity.badRequest().body("Asunto y descripción son requeridos");
+        }
+
         Reporte reporte = new Reporte();
-        reporte.setIdUsuario(id_usuario);
-        reporte.setAsunto(asunto);
-        reporte.setDescripcion(descripcion);
+        reporte.setIdUsuario(datos.getIdUsuario());
+        reporte.setAsunto(datos.getAsunto());
+        reporte.setDescripcion(datos.getDescripcion());
         reporte.setEstado("pendiente");
         reporte.setFechaCreacion(new Timestamp(System.currentTimeMillis()));
-
         reporteRepo.save(reporte);
 
-        // Notificación para el admin
+        // Notificación al admin
         Notificacion notiAdmin = new Notificacion();
-        notiAdmin.setIdUsuario(1); // ID admin válido, ajustar según tu sistema
-        notiAdmin.setMensaje("Nuevo reporte creado: " + asunto);
+        notiAdmin.setIdUsuario(ADMIN_ID);
+        notiAdmin.setMensaje("Nuevo reporte creado: " + datos.getAsunto());
         notiAdmin.setLeido(false);
         notiAdmin.setTipoDestino("incidencias");
         notiAdmin.setFecha(new Timestamp(System.currentTimeMillis()));
         notiRepo.save(notiAdmin);
 
-        // Notificación para el usuario creador
+        // Notificación al usuario
         Notificacion notiUsuario = new Notificacion();
-        notiUsuario.setIdUsuario(id_usuario);
-        notiUsuario.setMensaje("Tu reporte ha sido creado: " + asunto);
+        notiUsuario.setIdUsuario(datos.getIdUsuario());
+        notiUsuario.setMensaje("Tu reporte ha sido creado: " + datos.getAsunto());
         notiUsuario.setLeido(false);
         notiUsuario.setTipoDestino("tienda");
         notiUsuario.setFecha(new Timestamp(System.currentTimeMillis()));
@@ -60,7 +62,7 @@ public class ReporteController {
         return ResponseEntity.ok("Reporte creado y notificaciones enviadas");
     }
 
-    // Cambiar estado y notificar al usuario
+    // ✅ Cambiar estado del reporte
     @PutMapping("/cambiarEstado")
     public ResponseEntity<String> cambiarEstado(
         @RequestParam int id_reporte,

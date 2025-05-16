@@ -1,5 +1,6 @@
 package com.conexion.api.controller;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,19 +19,21 @@ public class NotificacionController {
     @Autowired
     private NotificacionRepository notiRepo;
 
-    // Obtener notificaciones por usuario y tipoDestino (ej: tienda o incidencias)
+    // ✅ 1. Obtener notificaciones no leídas por usuario y destino
     @GetMapping("/usuario")
     public ResponseEntity<List<Notificacion>> obtenerNotificaciones(
             @RequestParam("id_usuario") int idUsuario,
             @RequestParam("tipoDestino") String tipoDestino) {
-        
-        List<Notificacion> notificaciones = notiRepo.findByIdUsuarioAndTipoDestinoOrderByFechaDesc(idUsuario, tipoDestino);
+
+        List<Notificacion> notificaciones = notiRepo
+            .findByIdUsuarioAndTipoDestinoAndLeidoFalseOrderByFechaDesc(idUsuario, tipoDestino);
+
         return ResponseEntity.ok(notificaciones);
     }
 
-    // Marcar una notificación como leída por ID
-    @PutMapping("/leida")
-    public ResponseEntity<String> marcarComoLeida(@RequestParam int id) {
+    // ✅ 2. Marcar notificación como leída por ID
+    @PutMapping("/{id}/leida")
+    public ResponseEntity<String> marcarComoLeida(@PathVariable int id){
         Optional<Notificacion> noti = notiRepo.findById(id);
         if (noti.isPresent()) {
             Notificacion n = noti.get();
@@ -40,5 +43,14 @@ public class NotificacionController {
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No encontrada");
         }
+    }
+
+    // ✅ 3. Crear notificación (opcional, útil para cuando se crea un reporte)
+    @PostMapping("/crear")
+    public ResponseEntity<String> crearNotificacion(@RequestBody Notificacion notificacion) {
+        notificacion.setFecha(new Timestamp(System.currentTimeMillis()));
+        notificacion.setLeido(false); // siempre nueva = no leída
+        notiRepo.save(notificacion);
+        return ResponseEntity.ok("Notificación creada correctamente");
     }
 }
