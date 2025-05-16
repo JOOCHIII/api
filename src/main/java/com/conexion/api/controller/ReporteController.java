@@ -1,6 +1,7 @@
 package com.conexion.api.controller;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import com.conexion.api.repository.ReporteRepository;
 
 @RestController
 @RequestMapping("/api/reporte")
+@CrossOrigin(origins = "*") 
 public class ReporteController {
 
     @Autowired
@@ -43,7 +45,7 @@ public class ReporteController {
 
         // Notificación al admin
         Notificacion notiAdmin = new Notificacion();
-        notiAdmin.setIdUsuario(ADMIN_ID);
+        notiAdmin.setIdUsuario(datos.getIdUsuario());
         notiAdmin.setMensaje("Nuevo reporte creado: " + datos.getAsunto());
         notiAdmin.setLeido(false);
         notiAdmin.setTipoDestino("incidencias");
@@ -88,5 +90,11 @@ public class ReporteController {
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reporte no encontrado");
         }
+        
+    }
+    @GetMapping("/listar")
+    public ResponseEntity<List<Reporte>> listarReportes() {
+        List<Reporte> reportes = reporteRepo.findAll();
+        return ResponseEntity.ok(reportes);
     }
 }
