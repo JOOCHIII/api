@@ -1,5 +1,6 @@
 package com.conexion.api.controller;
 
+import com.conexion.api.model.LoginResponse;
 import com.conexion.api.model.Usuario;
 import com.conexion.api.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,30 +38,35 @@ public class UsuarioController {
         usuarioRepository.deleteById(id);
     }
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestParam String usuario, @RequestParam String contrasena,
-                                   @RequestParam String origen_app) {
+    public ResponseEntity<LoginResponse> login(
+            @RequestParam String usuario,
+            @RequestParam String contrasena,
+            @RequestParam String origen_app) {
 
         Usuario usuarioEncontrado = usuarioRepository.findByUsuario(usuario);
 
         if (usuarioEncontrado == null) {
-            return ResponseEntity.ok("USUARIO_NO_EXISTE");
+            return ResponseEntity.ok(new LoginResponse(null, null, "USUARIO_NO_EXISTE"));
         }
 
         if (!usuarioEncontrado.getContrasena().equals(contrasena)) {
-            return ResponseEntity.ok("CONTRASENA_INCORRECTA");
+            return ResponseEntity.ok(new LoginResponse(null, usuario, "CONTRASENA_INCORRECTA"));
         }
 
         if (!usuarioEncontrado.getOrigenApp().equals(origen_app)) {
-            return ResponseEntity.ok("ACCESO_DENEGADO_ORIGEN_APP");
+            return ResponseEntity.ok(new LoginResponse(null, usuario, "ACCESO_DENEGADO_ORIGEN_APP"));
         }
 
-        // Crear un mapa con la respuesta
-        Map<String, Object> respuesta = new HashMap<>();
-        respuesta.put("mensaje", "ACCESO_CONCEDIDO");
-        respuesta.put("idUsuario", usuarioEncontrado.getId()); // suponiendo que getId() devuelve el id
-
-        return ResponseEntity.ok(respuesta);
+        // Si todo está bien
+        return ResponseEntity.ok(
+                new LoginResponse(
+                        usuarioEncontrado.getId(),
+                        usuarioEncontrado.getUsuario(),
+                        "ACCESO_CONCEDIDO"
+                )
+        );
     }
+
     
     
 
