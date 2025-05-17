@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.*;
 import com.conexion.api.dto.ReporteDTO;
 import com.conexion.api.model.Notificacion;
 import com.conexion.api.model.Reporte;
+import com.conexion.api.model.Usuario;
 import com.conexion.api.repository.NotificacionRepository;
 import com.conexion.api.repository.ReporteRepository;
+import com.conexion.api.repository.UsuarioRepository;
 
 @RestController
 @RequestMapping("/api/reporte")
@@ -25,45 +27,54 @@ public class ReporteController {
 
     @Autowired
     private NotificacionRepository notiRepo;
+    
+
+    @Autowired
+    private UsuarioRepository usuarioRepo;
+    
 
 
 
     // ✅ Crear un nuevo reporte y notificar
-    @PostMapping("/crear")
-    public ResponseEntity<String> crearReporte(@RequestBody ReporteDTO datos) {
-        if (datos.getAsunto() == null || datos.getDescripcion() == null) {
-            return ResponseEntity.badRequest().body("Asunto y descripción son requeridos");
-        }
 
-        Reporte reporte = new Reporte();
-        reporte.setIdUsuario(datos.getIdUsuario());
-        reporte.setAsunto(datos.getAsunto());
-        reporte.setDescripcion(datos.getDescripcion());
-        reporte.setEstado("pendiente");
-        reporte.setFechaCreacion(new Timestamp(System.currentTimeMillis()));
-        reporteRepo.save(reporte);
-
-        // Notificación al admin
-        Notificacion notiAdmin = new Notificacion();
-        notiAdmin.setIdUsuario(datos.getIdUsuario());
-        notiAdmin.setMensaje("Nuevo reporte creado: " + datos.getAsunto());
-        notiAdmin.setLeido(false);
-        notiAdmin.setTipoDestino("incidencias");
-        notiAdmin.setFecha(new Timestamp(System.currentTimeMillis()));
-        notiRepo.save(notiAdmin);
-
-        // Notificación al usuario
-        Notificacion notiUsuario = new Notificacion();
-        notiUsuario.setIdUsuario(datos.getIdUsuario());
-        notiUsuario.setMensaje("Tu reporte ha sido creado: " + datos.getAsunto());
-        notiUsuario.setLeido(false);
-        notiUsuario.setTipoDestino("tienda");
-        notiUsuario.setFecha(new Timestamp(System.currentTimeMillis()));
-        notiRepo.save(notiUsuario);
-
-        return ResponseEntity.ok("Reporte creado y notificaciones enviadas");
+@PostMapping("/crear")
+public ResponseEntity<String> crearReporte(@RequestBody ReporteDTO datos) {
+    if (datos.getAsunto() == null || datos.getDescripcion() == null) {
+        return ResponseEntity.badRequest().body("Asunto y descripción son requeridos");
     }
 
+    Reporte reporte = new Reporte();
+    reporte.setIdUsuario(datos.getIdUsuario());
+    reporte.setAsunto(datos.getAsunto());
+    reporte.setDescripcion(datos.getDescripcion());
+    reporte.setEstado("pendiente");
+    reporte.setFechaCreacion(new Timestamp(System.currentTimeMillis()));
+    reporteRepo.save(reporte);
+
+    // Obtener info usuario creador
+    Optional<Usuario> usuarioOpt = usuarioRepo.findById((long) datos.getIdUsuario());
+    String nombreUsuario = usuarioOpt.map(u -> u.getNombrecompleto()).orElse("Usuario desconocido");
+
+    // Notificación al admin con nombre usuario incluido
+    Notificacion notiAdmin = new Notificacion();
+    notiAdmin.setIdUsuario(datos.getIdUsuario());
+    notiAdmin.setMensaje("Nuevo reporte creado por " + nombreUsuario + ": " + datos.getAsunto());
+    notiAdmin.setLeido(false);
+    notiAdmin.setTipoDestino("incidencias");
+    notiAdmin.setFecha(new Timestamp(System.currentTimeMillis()));
+    notiRepo.save(notiAdmin);
+
+    // Notificación al usuario
+    Notificacion notiUsuario = new Notificacion();
+    notiUsuario.setIdUsuario(datos.getIdUsuario());
+    notiUsuario.setMensaje("Tu reporte ha sido creado: " + datos.getAsunto());
+    notiUsuario.setLeido(false);
+    notiUsuario.setTipoDestino("tienda");
+    notiUsuario.setFecha(new Timestamp(System.currentTimeMillis()));
+    notiRepo.save(notiUsuario);
+
+    return ResponseEntity.ok("Reporte creado y notificaciones enviadas");
+}
     // ✅ Cambiar estado del reporte
     @PutMapping("/cambiarEstado")
     public ResponseEntity<String> cambiarEstado(
