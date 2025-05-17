@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -35,25 +37,33 @@ public class UsuarioController {
         usuarioRepository.deleteById(id);
     }
     @PostMapping("/login")
-    public String login(@RequestParam String usuario, @RequestParam String contrasena,
-            @RequestParam String origen_app) {
+    public ResponseEntity<?> login(@RequestParam String usuario, @RequestParam String contrasena,
+                                   @RequestParam String origen_app) {
 
         Usuario usuarioEncontrado = usuarioRepository.findByUsuario(usuario);
 
         if (usuarioEncontrado == null) {
-            return "USUARIO_NO_EXISTE";
+            return ResponseEntity.ok("USUARIO_NO_EXISTE");
         }
 
         if (!usuarioEncontrado.getContrasena().equals(contrasena)) {
-            return "CONTRASENA_INCORRECTA";
+            return ResponseEntity.ok("CONTRASENA_INCORRECTA");
         }
 
         if (!usuarioEncontrado.getOrigenApp().equals(origen_app)) {
-            return "ACCESO_DENEGADO_ORIGEN_APP";
+            return ResponseEntity.ok("ACCESO_DENEGADO_ORIGEN_APP");
         }
 
-        return "ACCESO_CONCEDIDO";
+        // Crear un mapa con la respuesta
+        Map<String, Object> respuesta = new HashMap<>();
+        respuesta.put("mensaje", "ACCESO_CONCEDIDO");
+        respuesta.put("idUsuario", usuarioEncontrado.getId()); // suponiendo que getId() devuelve el id
+
+        return ResponseEntity.ok(respuesta);
     }
+    
+    
+
 
 
     @PostMapping("/registro")
