@@ -1,8 +1,10 @@
 package com.conexion.api.controller;
 
 import com.conexion.api.model.Administrador;
+import com.conexion.api.model.LoginResponse;
 import com.conexion.api.repository.AdministradorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,7 +38,7 @@ public class AdministradorController {
     }
 
     @PostMapping("/login")
-    public String loginAdministrador(
+    public ResponseEntity<?> loginAdministrador(
             @RequestParam String usuarioadmin,
             @RequestParam String contrasenaadmin,
             @RequestParam String origen_app) {
@@ -44,19 +46,20 @@ public class AdministradorController {
         Administrador admin = administradorRepository.findByUsuarioadmin(usuarioadmin);
 
         if (admin == null) {
-            return "USUARIO_NO_EXISTE";
+            return ResponseEntity.status(404).body(new LoginResponse(null, usuarioadmin, "USUARIO_NO_EXISTE"));
         }
 
         if (!admin.getContrasenaAdmin().equals(contrasenaadmin)) {
-            return "CONTRASENA_INCORRECTA";
+            return ResponseEntity.status(401).body(new LoginResponse(null, usuarioadmin, "CONTRASENA_INCORRECTA"));
         }
 
         if (!admin.getOrigenApp().equals(origen_app)) {
-            return "ACCESO_DENEGADO_ORIGEN_APP";
+            return ResponseEntity.status(403).body(new LoginResponse(null, usuarioadmin, "ACCESO_DENEGADO_ORIGEN_APP"));
         }
 
-        return "ACCESO_CONCEDIDO";
+        return ResponseEntity.ok(new LoginResponse(admin.getId(), usuarioadmin, "ACCESO_CONCEDIDO"));
     }
+
 
     @PostMapping("/registro")
     public String registrarAdministrador(

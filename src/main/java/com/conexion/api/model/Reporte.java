@@ -15,7 +15,7 @@ public class Reporte {
     private String descripcion;
     private String estado;
     private Timestamp fechaCreacion;
-    // Getters y setters
+    // Getters y settersx	
 	public int getId() {
 		return id;
 	}

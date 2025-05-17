@@ -26,7 +26,7 @@ public class ReporteController {
     @Autowired
     private NotificacionRepository notiRepo;
 
-    private static final int ADMIN_ID = 1; // Cambiar si tienes admin dinámico
+
 
     // ✅ Crear un nuevo reporte y notificar
     @PostMapping("/crear")
