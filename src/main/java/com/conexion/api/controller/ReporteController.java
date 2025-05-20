@@ -103,7 +103,11 @@ public class ReporteController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reporte no encontrado");
         }
     }
-    
+    @GetMapping("/estadoReporte")
+    public ResponseEntity<List<Reporte>> obtenerReportesPorEstado(@RequestParam String estado) {
+        List<Reporte> reportes = reporteRepo.findByEstadoIgnoreCase(estado);
+        return ResponseEntity.ok(reportes);
+    }
     @PutMapping("/asignar")
     public ResponseEntity<String> asignarReporte(@RequestParam int id_reporte, @RequestParam int id_usuario) {
         Optional<Reporte> reporteOpt = reporteRepo.findById(id_reporte);
