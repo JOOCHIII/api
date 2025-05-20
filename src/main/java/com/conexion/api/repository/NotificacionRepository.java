@@ -7,6 +7,8 @@ import com.conexion.api.model.Notificacion;
 
 public interface NotificacionRepository extends JpaRepository<Notificacion, Integer> {
 	List<Notificacion> findByIdUsuarioAndTipoDestinoAndLeidoFalseOrderByFechaDesc(int idUsuario, String tipoDestino);
+	List<Notificacion> findByTipoDestinoAndLeidoFalseAndIdUsuarioIsNullOrderByFechaDesc(String tipoDestino);
+
 
     
 }

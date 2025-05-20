@@ -14,6 +14,7 @@ import com.conexion.api.repository.NotificacionRepository;
 
 @RestController
 @RequestMapping("/api/notificacion")
+@CrossOrigin(origins = "*")
 public class NotificacionController {
 
     @Autowired
@@ -30,7 +31,17 @@ public class NotificacionController {
 
         return ResponseEntity.ok(notificaciones);
     }
+    
+    @GetMapping("/admin")
+    public ResponseEntity<List<Notificacion>> obtenerNotificacionesAdmin(
+            @RequestParam("tipoDestino") String tipoDestino) {
 
+        // Solo devuelve notificaciones generales (sin id_usuario)
+        List<Notificacion> notificaciones = notiRepo
+            .findByTipoDestinoAndLeidoFalseAndIdUsuarioIsNullOrderByFechaDesc(tipoDestino);
+
+        return ResponseEntity.ok(notificaciones);
+    }
     // ✅ 2. Marcar notificación como leída por ID
     @PutMapping("/{id}/leida")
     public ResponseEntity<String> marcarComoLeida(@PathVariable int id){
