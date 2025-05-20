@@ -57,7 +57,7 @@ public class ReporteController {
 
         // Notificación al admin para TODOS (sin idUsuario)
         Notificacion notiAdmin = new Notificacion();
-        notiAdmin.setIdUsuario(0);  // Muy importante: sin idUsuario para que la notificación vaya a todos admins
+        notiAdmin.setIdUsuario(null);  // Muy importante: sin idUsuario para que la notificación vaya a todos admins
         notiAdmin.setMensaje("Nuevo reporte creado por " + nombreUsuario + ": " + datos.getAsunto());
         notiAdmin.setLeido(false);
         notiAdmin.setTipoDestino("incidencias");
