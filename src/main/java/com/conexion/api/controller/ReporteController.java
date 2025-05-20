@@ -37,44 +37,45 @@ public class ReporteController {
 
     // ✅ Crear un nuevo reporte y notificar
 
-@PostMapping("/crear")
-public ResponseEntity<String> crearReporte(@RequestBody ReporteDTO datos) {
-    if (datos.getAsunto() == null || datos.getDescripcion() == null) {
-        return ResponseEntity.badRequest().body("Asunto y descripción son requeridos");
+    @PostMapping("/crear")
+    public ResponseEntity<String> crearReporte(@RequestBody ReporteDTO datos) {
+        if (datos.getAsunto() == null || datos.getDescripcion() == null) {
+            return ResponseEntity.badRequest().body("Asunto y descripción son requeridos");
+        }
+
+        Reporte reporte = new Reporte();
+        reporte.setIdUsuario(datos.getIdUsuario());
+        reporte.setAsunto(datos.getAsunto());
+        reporte.setDescripcion(datos.getDescripcion());
+        reporte.setEstado("pendiente");
+        reporte.setFechaCreacion(new Timestamp(System.currentTimeMillis()));
+        reporteRepo.save(reporte);
+
+        // Obtener info usuario creador
+        Optional<Usuario> usuarioOpt = usuarioRepo.findById((long) datos.getIdUsuario());
+        String nombreUsuario = usuarioOpt.map(u -> u.getNombrecompleto()).orElse("Usuario desconocido");
+
+        // Notificación al admin para TODOS (sin idUsuario)
+        Notificacion notiAdmin = new Notificacion();
+        notiAdmin.setIdUsuario(0);  // Muy importante: sin idUsuario para que la notificación vaya a todos admins
+        notiAdmin.setMensaje("Nuevo reporte creado por " + nombreUsuario + ": " + datos.getAsunto());
+        notiAdmin.setLeido(false);
+        notiAdmin.setTipoDestino("incidencias");
+        notiAdmin.setFecha(new Timestamp(System.currentTimeMillis()));
+        notiRepo.save(notiAdmin);
+
+        // Notificación al usuario creador
+        Notificacion notiUsuario = new Notificacion();
+        notiUsuario.setIdUsuario(datos.getIdUsuario());
+        notiUsuario.setMensaje("Tu reporte ha sido creado: " + datos.getAsunto());
+        notiUsuario.setLeido(false);
+        notiUsuario.setTipoDestino("tienda");
+        notiUsuario.setFecha(new Timestamp(System.currentTimeMillis()));
+        notiRepo.save(notiUsuario);
+
+        return ResponseEntity.ok("Reporte creado y notificaciones enviadas");
     }
 
-    Reporte reporte = new Reporte();
-    reporte.setIdUsuario(datos.getIdUsuario());
-    reporte.setAsunto(datos.getAsunto());
-    reporte.setDescripcion(datos.getDescripcion());
-    reporte.setEstado("pendiente");
-    reporte.setFechaCreacion(new Timestamp(System.currentTimeMillis()));
-    reporteRepo.save(reporte);
-
-    // Obtener info usuario creador
-    Optional<Usuario> usuarioOpt = usuarioRepo.findById((long) datos.getIdUsuario());
-    String nombreUsuario = usuarioOpt.map(u -> u.getNombrecompleto()).orElse("Usuario desconocido");
-
-    // Notificación al admin con nombre usuario incluido
-    Notificacion notiAdmin = new Notificacion();
-    notiAdmin.setIdUsuario(datos.getIdUsuario());
-    notiAdmin.setMensaje("Nuevo reporte creado por " + nombreUsuario + ": " + datos.getAsunto());
-    notiAdmin.setLeido(false);
-    notiAdmin.setTipoDestino("incidencias");
-    notiAdmin.setFecha(new Timestamp(System.currentTimeMillis()));
-    notiRepo.save(notiAdmin);
-
-    // Notificación al usuario
-    Notificacion notiUsuario = new Notificacion();
-    notiUsuario.setIdUsuario(datos.getIdUsuario());
-    notiUsuario.setMensaje("Tu reporte ha sido creado: " + datos.getAsunto());
-    notiUsuario.setLeido(false);
-    notiUsuario.setTipoDestino("tienda");
-    notiUsuario.setFecha(new Timestamp(System.currentTimeMillis()));
-    notiRepo.save(notiUsuario);
-
-    return ResponseEntity.ok("Reporte creado y notificaciones enviadas");
-}
     // ✅ Cambiar estado del reporte
     @PutMapping("/cambiarEstado")
     public ResponseEntity<String> cambiarEstado(
@@ -88,7 +89,7 @@ public ResponseEntity<String> crearReporte(@RequestBody ReporteDTO datos) {
             reporte.setEstado(nuevo_estado);
             reporteRepo.save(reporte);
 
-            // Notificar al usuario
+            // Notificar al usuario tienda que creó el reporte
             Notificacion noti = new Notificacion();
             noti.setIdUsuario(reporte.getIdUsuario());
             noti.setMensaje("El estado de tu reporte '" + reporte.getAsunto() + "' ha cambiado a: " + nuevo_estado);
@@ -101,8 +102,8 @@ public ResponseEntity<String> crearReporte(@RequestBody ReporteDTO datos) {
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reporte no encontrado");
         }
-        
     }
+
     @GetMapping("/listar")
     public ResponseEntity<List<Reporte>> listarReportes() {
         List<Reporte> reportes = reporteRepo.findAll();
