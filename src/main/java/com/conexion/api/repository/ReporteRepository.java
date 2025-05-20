@@ -6,4 +6,6 @@ import com.conexion.api.model.Reporte;
 
 public interface ReporteRepository extends JpaRepository<Reporte, Integer> {
     List<Reporte> findByIdUsuario(int idUsuario);
+    List<Reporte> findByIdUsuarioAsignado(Integer idUsuarioAsignado);
+    List<Reporte> findByEstado(String estado);
 }

@@ -103,6 +103,18 @@ public class ReporteController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reporte no encontrado");
         }
     }
+    
+    @PutMapping("/asignar")
+    public ResponseEntity<String> asignarReporte(@RequestParam int id_reporte, @RequestParam int id_usuario) {
+        Optional<Reporte> reporteOpt = reporteRepo.findById(id_reporte);
+        if (reporteOpt.isPresent()) {
+            Reporte reporte = reporteOpt.get();
+            reporte.setIdUsuarioAsignado(id_usuario);
+            reporteRepo.save(reporte);
+            return ResponseEntity.ok("Asignado correctamente");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reporte no encontrado");
+    }
 
     @GetMapping("/listar")
     public ResponseEntity<List<Reporte>> listarReportes() {
