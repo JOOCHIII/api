@@ -1,5 +1,6 @@
 package com.conexion.api.dto;
 
+
 import com.conexion.api.model.Reporte;
 import java.sql.Timestamp;
 
@@ -15,6 +16,8 @@ public class ReporteDTO {
     private Timestamp fecha; // ✅ Campo nuevo
 
     // Getters y setters
+    public ReporteDTO() {
+    }
 
     public int getIdUsuario() {
         return idUsuario;
