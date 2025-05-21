@@ -104,11 +104,34 @@ public class ReporteController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reporte no encontrado");
         }
     }
+    
+    
+//   Devuelve una lista de objetos Reporte puros, sin enriquecimiento (sin nombre asignado).
     @GetMapping("/estadoReporte")
     public ResponseEntity<List<Reporte>> obtenerReportesPorEstado(@RequestParam String estado) {
         List<Reporte> reportes = reporteRepo.findByEstadoIgnoreCase(estado);
         return ResponseEntity.ok(reportes);
     }
+    
+//    🔹 Devuelve una lista de ReporteDTO, con el nombre del usuario asignado (si lo hay) ya incluido.
+    @GetMapping("/listarReporteEstado")
+    public ResponseEntity<List<ReporteDTO>> listarReportesDtoPorEstado(@RequestParam String estado) {
+        List<Reporte> reportes = reporteRepo.findByEstadoIgnoreCase(estado);
+
+        List<ReporteDTO> resultado = reportes.stream().map(reporte -> {
+            String nombreAsignado = null;
+            if (reporte.getIdUsuarioAsignado() != null) {
+                nombreAsignado = usuarioRepo.findById((long) reporte.getIdUsuarioAsignado())
+                    .map(usuario -> usuario.getNombrecompleto())
+                    .orElse("No asignado");
+            }
+            return new ReporteDTO(reporte, nombreAsignado);
+        }).toList();
+
+        return ResponseEntity.ok(resultado);
+    }
+
+    
     @PutMapping("/asignar")
     public ResponseEntity<String> asignarReporte(
             @RequestParam int id_reporte,
@@ -146,39 +169,12 @@ public class ReporteController {
         List<ReporteDTO> resultado = new ArrayList<>();
 
         for (Reporte reporte : reportes) {
-            // Constructor ya asigna el id y otros campos básicos
             ReporteDTO dto = new ReporteDTO(reporte, null);
-
-            // Solo asignamos nombreAsignado si existe usuario asignado
-            if (reporte.getIdUsuarioAsignado() != null) {
-                usuarioRepo.findById((long) reporte.getIdUsuarioAsignado())
-                    .ifPresent(usuario -> dto.setNombreAsignado(usuario.getNombrecompleto()));
-            } else {
-                dto.setNombreAsignado("No asignado");
-            }
-
-            resultado.add(dto);
-        }
-
-        return ResponseEntity.ok(resultado);
-    }
-
-    
-
-
-
-    @GetMapping("/usuario")
-    public ResponseEntity<List<ReporteDTO>> obtenerReportesPorUsuarioDTO(@RequestParam("id_usuario") int idUsuario) {
-        List<Reporte> reportes = reporteRepo.findByIdUsuario(idUsuario);
-        List<ReporteDTO> resultado = new ArrayList<>();
-
-        for (Reporte reporte : reportes) {
-            ReporteDTO dto = new ReporteDTO(reporte, null);
+            dto.setId(reporte.getId());
             dto.setIdUsuario(reporte.getIdUsuario());
             dto.setAsunto(reporte.getAsunto());
             dto.setDescripcion(reporte.getDescripcion());
             dto.setEstado(reporte.getEstado());
-   
 
             // Si hay un usuario asignado, buscamos su nombre
             if (reporte.getIdUsuarioAsignado() != null) {
@@ -190,9 +186,17 @@ public class ReporteController {
 
             resultado.add(dto);
         }
-
+        
+    
         return ResponseEntity.ok(resultado);
     }
 
+
+
+    @GetMapping("/usuario")
+    public ResponseEntity<List<Reporte>> obtenerReportesPorUsuario(@RequestParam("id_usuario") int idUsuario) {
+        List<Reporte> reportes = reporteRepo.findByIdUsuario(idUsuario);
+        return ResponseEntity.ok(reportes);
+    }
 
 }
