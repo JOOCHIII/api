@@ -170,6 +170,7 @@ public class ReporteController {
 
         for (Reporte reporte : reportes) {
             ReporteDTO dto = new ReporteDTO(reporte, null);
+            dto.getId(reporte.getId());
             dto.setIdUsuario(reporte.getIdUsuario());
             dto.setAsunto(reporte.getAsunto());
             dto.setDescripcion(reporte.getDescripcion());

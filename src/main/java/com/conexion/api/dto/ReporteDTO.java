@@ -3,12 +3,21 @@ package com.conexion.api.dto;
 import com.conexion.api.model.Reporte;
 
 public class ReporteDTO {
+	private int id;
     private int idUsuario;
     private String asunto;
     private String descripcion;
     private String nombreAsignado;
     private String estado;
 
+    
+    public int getId(int i) {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public int getIdUsuario() {
         return idUsuario;
@@ -49,11 +58,14 @@ public class ReporteDTO {
     }
     
     public ReporteDTO(Reporte reporte, String nombreAsignado) {
+    	this.id = reporte.getId();  
         this.idUsuario = reporte.getIdUsuario();
         this.asunto = reporte.getAsunto();
         this.descripcion = reporte.getDescripcion();
         this.estado = reporte.getEstado();
         this.nombreAsignado = nombreAsignado != null ? nombreAsignado : "No asignado";
     }
-
+    public ReporteDTO() {}
 }
+
+
