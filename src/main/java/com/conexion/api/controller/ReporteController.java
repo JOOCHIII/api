@@ -139,7 +139,7 @@ public class ReporteController {
         return ResponseEntity.ok(reportes);
     }
     
-<<<<<<< HEAD
+
     @GetMapping("/listarReporte")
     public ResponseEntity<List<ReporteDTO>> listarReportesDTO() {
         List<Reporte> reportes = reporteRepo.findAll();
@@ -167,10 +167,9 @@ public class ReporteController {
     }
 
     
-    @GetMapping("/api/reporte/usuario")
-=======
+
     @GetMapping("/usuario")
->>>>>>> 275d64976116006a602082518b4f52d7b774673e
+
     public ResponseEntity<List<Reporte>> obtenerReportesPorUsuario(@RequestParam("id_usuario") int idUsuario) {
         List<Reporte> reportes = reporteRepo.findByIdUsuario(idUsuario);
         return ResponseEntity.ok(reportes);
