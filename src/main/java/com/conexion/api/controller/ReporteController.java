@@ -175,6 +175,7 @@ public class ReporteController {
             dto.setAsunto(reporte.getAsunto());
             dto.setDescripcion(reporte.getDescripcion());
             dto.setEstado(reporte.getEstado());
+            dto.setFecha(reporte.getFechaCreacion());
 
             // Si hay un usuario asignado, buscamos su nombre
             if (reporte.getIdUsuarioAsignado() != null) {

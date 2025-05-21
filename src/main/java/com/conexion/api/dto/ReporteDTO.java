@@ -4,6 +4,7 @@ package com.conexion.api.dto;
 import com.conexion.api.model.Reporte;
 import java.sql.Timestamp;
 
+import java.sql.Timestamp;
 
 
 public class ReporteDTO {
@@ -13,15 +14,21 @@ public class ReporteDTO {
     private String descripcion;
     private String nombreAsignado;
     private String estado;
+    private Timestamp fecha; // ✅ Campo nuevo
+
 
     
-    public int getId(int i) {
-        return id;
-    }
 
-    public void setId(int id) {
-        this.id = id;
+    public int getId() {
+		return id;
+	}
 
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	// Getters y setters
+    public ReporteDTO() {
     }
 
     public int getIdUsuario() {
@@ -73,7 +80,15 @@ public class ReporteDTO {
         this.nombreAsignado = nombreAsignado != null ? nombreAsignado : "No asignado";
     }
 
-    public ReporteDTO() {}
+
+    public Timestamp getFecha() {          // ✅ Getter correcto
+        return fecha;
+    }
+
+    public void setFecha(Timestamp fecha) { // ✅ Setter correcto
+        this.fecha = fecha;
+    }
+
 
 }
 
