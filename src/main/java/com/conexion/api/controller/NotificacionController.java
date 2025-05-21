@@ -64,4 +64,21 @@ public class NotificacionController {
         notiRepo.save(notificacion);
         return ResponseEntity.ok("Notificación creada correctamente");
     }
+    @PutMapping("/marcarTodasLeidas")
+    public ResponseEntity<String> marcarTodasComoLeidas(
+            @RequestParam int id_usuario,
+            @RequestParam String tipoDestino) {
+
+        List<Notificacion> notificaciones = notiRepo
+            .findByIdUsuarioAndTipoDestinoAndLeidoFalseOrderByFechaDesc(id_usuario, tipoDestino);
+
+        for (Notificacion noti : notificaciones) {
+            noti.setLeido(true);
+        }
+
+        notiRepo.saveAll(notificaciones);
+
+        return ResponseEntity.ok("Todas las notificaciones marcadas como leídas");
+    }
+
 }
