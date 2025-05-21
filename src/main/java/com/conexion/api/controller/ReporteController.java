@@ -1,6 +1,7 @@
 package com.conexion.api.controller;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -137,6 +138,33 @@ public class ReporteController {
         List<Reporte> reportes = reporteRepo.findAll();
         return ResponseEntity.ok(reportes);
     }
+    
+    @GetMapping("/listarReporte")
+    public ResponseEntity<List<ReporteDTO>> listarReportesDTO() {
+        List<Reporte> reportes = reporteRepo.findAll();
+        List<ReporteDTO> resultado = new ArrayList<>();
+
+        for (Reporte reporte : reportes) {
+            ReporteDTO dto = new ReporteDTO();
+            dto.setIdUsuario(reporte.getIdUsuario());
+            dto.setAsunto(reporte.getAsunto());
+            dto.setDescripcion(reporte.getDescripcion());
+            dto.setEstado(reporte.getEstado());
+
+            // Si hay un usuario asignado, buscamos su nombre
+            if (reporte.getIdUsuarioAsignado() != null) {
+                usuarioRepo.findById((long) reporte.getIdUsuarioAsignado())
+                    .ifPresent(usuario -> dto.setNombreAsignado(usuario.getNombrecompleto()));
+            } else {
+                dto.setNombreAsignado("No asignado");
+            }
+
+            resultado.add(dto);
+        }
+
+        return ResponseEntity.ok(resultado);
+    }
+
     
     @GetMapping("/api/reporte/usuario")
     public ResponseEntity<List<Reporte>> obtenerReportesPorUsuario(@RequestParam("id_usuario") int idUsuario) {

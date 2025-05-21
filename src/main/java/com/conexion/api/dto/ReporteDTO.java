@@ -4,6 +4,9 @@ public class ReporteDTO {
     private int idUsuario;
     private String asunto;
     private String descripcion;
+    private String nombreAsignado;
+    private String estado;
+
 
     public int getIdUsuario() {
         return idUsuario;
@@ -16,7 +19,7 @@ public class ReporteDTO {
     public String getAsunto() {
         return asunto;
     }
-
+    
     public void setAsunto(String asunto) {
         this.asunto = asunto;
     }
@@ -27,5 +30,19 @@ public class ReporteDTO {
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+    public String getNombreAsignado() {
+        return nombreAsignado;
+    }
+
+    public void setNombreAsignado(String nombreAsignado) {
+        this.nombreAsignado = nombreAsignado;
+    }
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 }
