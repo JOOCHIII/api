@@ -1,5 +1,7 @@
 package com.conexion.api.dto;
 
+import com.conexion.api.model.Reporte;
+
 public class ReporteDTO {
     private int idUsuario;
     private String asunto;
@@ -45,4 +47,13 @@ public class ReporteDTO {
     public void setEstado(String estado) {
         this.estado = estado;
     }
+    
+    public ReporteDTO(Reporte reporte, String nombreAsignado) {
+        this.idUsuario = reporte.getIdUsuario();
+        this.asunto = reporte.getAsunto();
+        this.descripcion = reporte.getDescripcion();
+        this.estado = reporte.getEstado();
+        this.nombreAsignado = nombreAsignado != null ? nombreAsignado : "No asignado";
+    }
+
 }
