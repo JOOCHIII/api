@@ -109,16 +109,28 @@ public class ReporteController {
         return ResponseEntity.ok(reportes);
     }
     @PutMapping("/asignar")
-    public ResponseEntity<String> asignarReporte(@RequestParam int id_reporte, @RequestParam int id_usuario) {
+    public ResponseEntity<String> asignarReporte(
+            @RequestParam int id_reporte,
+            @RequestParam int id_usuario) {
         Optional<Reporte> reporteOpt = reporteRepo.findById(id_reporte);
-        if (reporteOpt.isPresent()) {
-            Reporte reporte = reporteOpt.get();
-            reporte.setIdUsuarioAsignado(id_usuario);
-            reporteRepo.save(reporte);
-            return ResponseEntity.ok("Asignado correctamente");
+        Optional<Usuario> usuarioOpt = usuarioRepo.findById((long) id_usuario);
+        if (reporteOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reporte no encontrado");
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reporte no encontrado");
+        if (usuarioOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
+        }
+        Usuario usuario = usuarioOpt.get();
+        // ✅ Solo permitir si origen_app es "incidencias"
+        if (!usuario.getOrigenApp().equalsIgnoreCase("incidencias")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Solo se puede asignar a usuarios de tipo 'incidencias'");
+        }
+        Reporte reporte = reporteOpt.get();
+        reporte.setIdUsuarioAsignado(id_usuario);
+        reporteRepo.save(reporte);
+        return ResponseEntity.ok("Reporte asignado correctamente");
     }
+
 
     @GetMapping("/listar")
     public ResponseEntity<List<Reporte>> listarReportes() {
