@@ -1,10 +1,10 @@
 package com.conexion.api.dto;
 
-<<<<<<< HEAD
 import com.conexion.api.model.Reporte;
-=======
 import java.sql.Timestamp;
->>>>>>> 802ecf6 (añadir fecha)
+
+import java.sql.Timestamp;
+
 
 public class ReporteDTO {
     private int idUsuario;
@@ -55,8 +55,7 @@ public class ReporteDTO {
     public void setEstado(String estado) {
         this.estado = estado;
     }
-<<<<<<< HEAD
-    
+
     public ReporteDTO(Reporte reporte, String nombreAsignado) {
         this.idUsuario = reporte.getIdUsuario();
         this.asunto = reporte.getAsunto();
@@ -65,7 +64,6 @@ public class ReporteDTO {
         this.nombreAsignado = nombreAsignado != null ? nombreAsignado : "No asignado";
     }
 
-=======
 
     public Timestamp getFecha() {          // ✅ Getter correcto
         return fecha;
@@ -74,5 +72,5 @@ public class ReporteDTO {
     public void setFecha(Timestamp fecha) { // ✅ Setter correcto
         this.fecha = fecha;
     }
->>>>>>> 802ecf6 (añadir fecha)
+
 }
