@@ -39,34 +39,33 @@ public class UsuarioController {
         usuarioRepository.deleteById(id);
     }
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(
-            @RequestParam String usuario,
-            @RequestParam String contrasena,
-            @RequestParam String origen_app) {
+    public ResponseEntity<?> login(@RequestParam String usuario, @RequestParam String contrasena,
+                                   @RequestParam String origen_app) {
 
         Usuario usuarioEncontrado = usuarioRepository.findByUsuario(usuario);
 
         if (usuarioEncontrado == null) {
-            return ResponseEntity.ok(new LoginResponse(null, null, "USUARIO_NO_EXISTE"));
+            return ResponseEntity.ok("USUARIO_NO_EXISTE");
         }
 
         if (!usuarioEncontrado.getContrasena().equals(contrasena)) {
-            return ResponseEntity.ok(new LoginResponse(null, usuario, "CONTRASENA_INCORRECTA"));
+            return ResponseEntity.ok("CONTRASENA_INCORRECTA");
         }
 
         if (!usuarioEncontrado.getOrigenApp().equals(origen_app)) {
-            return ResponseEntity.ok(new LoginResponse(null, usuario, "ACCESO_DENEGADO_ORIGEN_APP"));
+            return ResponseEntity.ok("ACCESO_DENEGADO_ORIGEN_APP");
         }
 
-        // Si todo está bien
-        return ResponseEntity.ok(
-                new LoginResponse(
-                        usuarioEncontrado.getId(),
-                        usuarioEncontrado.getUsuario(),
-                        "ACCESO_CONCEDIDO"
-                )
+        // Aquí está la clave
+        LoginResponse respuesta = new LoginResponse(
+            usuarioEncontrado.getId(),  // <-- Asegúrate que esto sea el ID correcto
+            usuarioEncontrado.getUsuario(),
+            "ACCESO_CONCEDIDO"
         );
+
+        return ResponseEntity.ok(respuesta);
     }
+
 
     
    
