@@ -195,9 +195,14 @@ public class ReporteController {
 
 
     @GetMapping("/usuario")
-    public ResponseEntity<List<Reporte>> obtenerReportesPorUsuario(@RequestParam("id_usuario") int idUsuario) {
-        List<Reporte> reportes = reporteRepo.findByIdUsuario(idUsuario);
-        return ResponseEntity.ok(reportes);
+    public ResponseEntity<List<ReporteDTO>> obtenerReportesPorUsuario(@RequestParam("id_usuario") int idUsuario) {
+    	List<Reporte> reportes = reporteRepo.findByIdUsuario(idUsuario);
+        List<ReporteDTO> dtos = new ArrayList<>();
+        for (Reporte reporte : reportes) {
+            dtos.add(new ReporteDTO(reporte));
+        }
+        return ResponseEntity.ok(dtos);
     }
+
 
 }
