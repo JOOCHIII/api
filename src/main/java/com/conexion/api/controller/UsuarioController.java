@@ -67,8 +67,12 @@ public class UsuarioController {
 
 
     
-    
-
+   
+    @GetMapping("/usuarios/incidencias")
+    public ResponseEntity<List<Usuario>> obtenerUsuariosIncidencias() {
+        List<Usuario> usuariosIncidencias = usuarioRepository.findByOrigenApp("incidencias");
+        return ResponseEntity.ok(usuariosIncidencias);
+    }
 
 
     @PostMapping("/registro")
