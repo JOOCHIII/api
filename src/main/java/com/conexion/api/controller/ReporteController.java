@@ -146,15 +146,10 @@ public class ReporteController {
         List<ReporteDTO> resultado = new ArrayList<>();
 
         for (Reporte reporte : reportes) {
+            // Constructor ya asigna el id y otros campos básicos
             ReporteDTO dto = new ReporteDTO(reporte, null);
-            dto.setId(reporte.getId());
-            dto.setIdUsuario(reporte.getIdUsuario());
-            dto.setAsunto(reporte.getAsunto());
-            dto.setDescripcion(reporte.getDescripcion());
-            dto.setEstado(reporte.getEstado());
-           
 
-            // Si hay un usuario asignado, buscamos su nombre
+            // Solo asignamos nombreAsignado si existe usuario asignado
             if (reporte.getIdUsuarioAsignado() != null) {
                 usuarioRepo.findById((long) reporte.getIdUsuarioAsignado())
                     .ifPresent(usuario -> dto.setNombreAsignado(usuario.getNombrecompleto()));
