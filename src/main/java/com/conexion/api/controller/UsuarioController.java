@@ -13,6 +13,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/usuarios")
+@CrossOrigin(origins = "*")
 public class UsuarioController {
 
     @Autowired
@@ -68,12 +69,11 @@ public class UsuarioController {
 
     
    
-    @GetMapping("/usuarios/incidencias")
+    @GetMapping("/incidencias")
     public ResponseEntity<List<Usuario>> obtenerUsuariosIncidencias() {
         List<Usuario> usuariosIncidencias = usuarioRepository.findByOrigenApp("incidencias");
         return ResponseEntity.ok(usuariosIncidencias);
     }
-
 
     @PostMapping("/registro")
     public String registrarUsuario(
