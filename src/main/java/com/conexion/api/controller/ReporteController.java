@@ -168,8 +168,9 @@ public class ReporteController {
 
     
 
-    @GetMapping("/usuario")
 
+
+    @GetMapping("/usuario")
     public ResponseEntity<List<Reporte>> obtenerReportesPorUsuario(@RequestParam("id_usuario") int idUsuario) {
         List<Reporte> reportes = reporteRepo.findByIdUsuario(idUsuario);
         return ResponseEntity.ok(reportes);
