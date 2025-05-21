@@ -14,9 +14,7 @@ public class ReporteDTO {
     private String descripcion;
     private String nombreAsignado;
     private String estado;
-    private Timestamp fecha; // ✅ Campo nuevo
 
-<<<<<<< HEAD
     
     public int getId(int i) {
         return id;
@@ -24,10 +22,7 @@ public class ReporteDTO {
 
     public void setId(int id) {
         this.id = id;
-=======
-    // Getters y setters
-    public ReporteDTO() {
->>>>>>> 3c76f74cb2f8f0dbe1716545725f136de28a6c21
+
     }
 
     public int getIdUsuario() {
@@ -78,20 +73,9 @@ public class ReporteDTO {
         this.estado = reporte.getEstado();
         this.nombreAsignado = nombreAsignado != null ? nombreAsignado : "No asignado";
     }
-<<<<<<< HEAD
+
     public ReporteDTO() {}
-=======
 
-
-    public Timestamp getFecha() {          // ✅ Getter correcto
-        return fecha;
-    }
-
-    public void setFecha(Timestamp fecha) { // ✅ Setter correcto
-        this.fecha = fecha;
-    }
-
->>>>>>> 3c76f74cb2f8f0dbe1716545725f136de28a6c21
 }
 
 
