@@ -15,6 +15,7 @@ public class Reporte {
     private String descripcion;
     private String estado;
     private Timestamp fechaCreacion;
+    private Integer idUsuarioAsignado;
     // Getters y settersx	
 	public int getId() {
 		return id;
@@ -51,6 +52,12 @@ public class Reporte {
 	}
 	public void setFechaCreacion(Timestamp fechaCreacion) {
 		this.fechaCreacion = fechaCreacion;
+	}
+	public Integer getIdUsuarioAsignado() {
+		return idUsuarioAsignado;
+	}
+	public void setIdUsuarioAsignado(Integer idUsuarioAsignado) {
+		this.idUsuarioAsignado = idUsuarioAsignado;
 	}
     
     
