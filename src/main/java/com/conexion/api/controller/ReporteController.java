@@ -172,9 +172,31 @@ public class ReporteController {
 
 
     @GetMapping("/usuario")
-    public ResponseEntity<List<Reporte>> obtenerReportesPorUsuario(@RequestParam("id_usuario") int idUsuario) {
+    public ResponseEntity<List<ReporteDTO>> obtenerReportesPorUsuarioDTO(@RequestParam("id_usuario") int idUsuario) {
         List<Reporte> reportes = reporteRepo.findByIdUsuario(idUsuario);
-        return ResponseEntity.ok(reportes);
+        List<ReporteDTO> resultado = new ArrayList<>();
+
+        for (Reporte reporte : reportes) {
+            ReporteDTO dto = new ReporteDTO(reporte, null);
+            dto.setIdUsuario(reporte.getIdUsuario());
+            dto.setAsunto(reporte.getAsunto());
+            dto.setDescripcion(reporte.getDescripcion());
+            dto.setEstado(reporte.getEstado());
+            dto.setFecha(reporte.getFechaCreacion());
+
+            // Si hay un usuario asignado, buscamos su nombre
+            if (reporte.getIdUsuarioAsignado() != null) {
+                usuarioRepo.findById((long) reporte.getIdUsuarioAsignado())
+                    .ifPresent(usuario -> dto.setNombreAsignado(usuario.getNombrecompleto()));
+            } else {
+                dto.setNombreAsignado("No asignado");
+            }
+
+            resultado.add(dto);
+        }
+
+        return ResponseEntity.ok(resultado);
     }
+
 
 }
