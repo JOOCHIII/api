@@ -1,6 +1,10 @@
 package com.conexion.api.dto;
 
+<<<<<<< HEAD
 import com.conexion.api.model.Reporte;
+=======
+import java.sql.Timestamp;
+>>>>>>> 802ecf6 (añadir fecha)
 
 public class ReporteDTO {
     private int idUsuario;
@@ -8,7 +12,9 @@ public class ReporteDTO {
     private String descripcion;
     private String nombreAsignado;
     private String estado;
+    private Timestamp fecha; // ✅ Campo nuevo
 
+    // Getters y setters
 
     public int getIdUsuario() {
         return idUsuario;
@@ -21,7 +27,7 @@ public class ReporteDTO {
     public String getAsunto() {
         return asunto;
     }
-    
+
     public void setAsunto(String asunto) {
         this.asunto = asunto;
     }
@@ -33,6 +39,7 @@ public class ReporteDTO {
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
+
     public String getNombreAsignado() {
         return nombreAsignado;
     }
@@ -40,6 +47,7 @@ public class ReporteDTO {
     public void setNombreAsignado(String nombreAsignado) {
         this.nombreAsignado = nombreAsignado;
     }
+
     public String getEstado() {
         return estado;
     }
@@ -47,6 +55,7 @@ public class ReporteDTO {
     public void setEstado(String estado) {
         this.estado = estado;
     }
+<<<<<<< HEAD
     
     public ReporteDTO(Reporte reporte, String nombreAsignado) {
         this.idUsuario = reporte.getIdUsuario();
@@ -56,4 +65,14 @@ public class ReporteDTO {
         this.nombreAsignado = nombreAsignado != null ? nombreAsignado : "No asignado";
     }
 
+=======
+
+    public Timestamp getFecha() {          // ✅ Getter correcto
+        return fecha;
+    }
+
+    public void setFecha(Timestamp fecha) { // ✅ Setter correcto
+        this.fecha = fecha;
+    }
+>>>>>>> 802ecf6 (añadir fecha)
 }
