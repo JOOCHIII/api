@@ -1,5 +1,6 @@
 package com.conexion.api.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,6 +20,7 @@ public class FotoProducto {
 
     @ManyToOne
     @JoinColumn(name = "id_producto")
+    @JsonBackReference
     private Productos producto;
 
     // Getters y Setters
