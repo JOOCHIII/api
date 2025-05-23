@@ -18,7 +18,7 @@ import com.conexion.api.model.Productos;
 import com.conexion.api.repository.ProductosRepository;
 
 @RestController
-@RequestMapping("/productos")
+@RequestMapping("/api/productos")
 @CrossOrigin
 public class ProductosController {
 
