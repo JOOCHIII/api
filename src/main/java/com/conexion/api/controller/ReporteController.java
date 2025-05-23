@@ -77,6 +77,8 @@ public class ReporteController {
         return ResponseEntity.ok("Reporte creado y notificaciones enviadas");
     }
 
+    
+    
     // ✅ Cambiar estado del reporte
     @PutMapping("/cambiarEstado")
     public ResponseEntity<String> cambiarEstado(
@@ -105,7 +107,15 @@ public class ReporteController {
         }
     }
     
-    
+    @GetMapping("/{id}")
+    public ResponseEntity<Reporte> getReportePorId(@PathVariable int id) {
+        Optional<Reporte> reporteOpt = reporteRepo.findById(id);
+        if (reporteOpt.isPresent()) {
+            return ResponseEntity.ok(reporteOpt.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
 //   Devuelve una lista de objetos Reporte puros, sin enriquecimiento (sin nombre asignado).
     @GetMapping("/estadoReporte")
     public ResponseEntity<List<Reporte>> obtenerReportesPorEstado(@RequestParam String estado) {
