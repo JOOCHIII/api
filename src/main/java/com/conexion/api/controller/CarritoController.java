@@ -8,6 +8,8 @@ import com.conexion.api.repository.CarritoRepository;
 import com.conexion.api.repository.ProductosRepository;
 import com.conexion.api.repository.UsuarioRepository;
 
+import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -56,9 +58,15 @@ public class CarritoController {
         return ResponseEntity.ok(carrito);
     }
 
+    @Transactional
     @DeleteMapping("/eliminar")
     public ResponseEntity<?> eliminarDelCarrito(@RequestParam Long idUsuario, @RequestParam Long idProducto) {
-        carritoRepository.deleteByUsuarioIdAndProductoId(idUsuario, idProducto);
-        return ResponseEntity.ok("Producto eliminado del carrito");
+        CarritoId carritoId = new CarritoId(idUsuario, idProducto);
+        if (carritoRepository.existsById(carritoId)) {
+            carritoRepository.deleteById(carritoId);
+            return ResponseEntity.ok("Producto eliminado del carrito");
+        } else {
+            return ResponseEntity.badRequest().body("Producto no encontrado en el carrito");
+        }
     }
 }
