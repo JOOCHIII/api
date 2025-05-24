@@ -1,6 +1,5 @@
 package com.conexion.api.controller;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +21,7 @@ public class FavoritoController {
 
     @Autowired
     private ProductosRepository productosRepository;
-    
+
     @PostMapping("/agregar")
     public ResponseEntity<String> agregarFavorito(@RequestParam Long idUsuario, @RequestParam Long idProducto) {
         FavoritoId id = new FavoritoId(idUsuario, idProducto);
@@ -31,7 +30,6 @@ public class FavoritoController {
             return ResponseEntity.badRequest().body("El favorito ya existe");
         }
 
-        // Buscar el producto
         Productos producto = productosRepository.findById(idProducto).orElse(null);
         if (producto == null) {
             return ResponseEntity.badRequest().body("Producto no encontrado");
@@ -41,7 +39,6 @@ public class FavoritoController {
         favoritoRepository.save(favorito);
         return ResponseEntity.ok("Favorito agregado");
     }
-
 
     @DeleteMapping("/eliminar")
     public ResponseEntity<String> eliminarFavorito(@RequestParam Long idUsuario, @RequestParam Long idProducto) {
@@ -63,5 +60,4 @@ public class FavoritoController {
         }
         return ResponseEntity.ok(favoritos);
     }
-
 }

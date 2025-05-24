@@ -1,4 +1,5 @@
 package com.conexion.api.model;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import java.io.Serializable;
@@ -42,7 +43,7 @@ public class FavoritoId implements Serializable {
         if (!(o instanceof FavoritoId)) return false;
         FavoritoId that = (FavoritoId) o;
         return Objects.equals(getIdUsuario(), that.getIdUsuario()) &&
-                Objects.equals(getIdProducto(), that.getIdProducto());
+               Objects.equals(getIdProducto(), that.getIdProducto());
     }
 
     @Override
