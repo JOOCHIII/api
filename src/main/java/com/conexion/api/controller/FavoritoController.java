@@ -7,8 +7,10 @@ import org.springframework.web.bind.annotation.*;
 import com.conexion.api.model.Favorito;
 import com.conexion.api.model.FavoritoId;
 import com.conexion.api.model.Productos;
+import com.conexion.api.model.Usuario;
 import com.conexion.api.repository.FavoritoRepository;
 import com.conexion.api.repository.ProductosRepository;
+import com.conexion.api.repository.UsuarioRepository;
 
 import java.util.List;
 
@@ -18,6 +20,8 @@ public class FavoritoController {
 
     @Autowired
     private FavoritoRepository favoritoRepository;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @Autowired
     private ProductosRepository productosRepository;
@@ -35,10 +39,16 @@ public class FavoritoController {
             return ResponseEntity.badRequest().body("Producto no encontrado");
         }
 
-        Favorito favorito = new Favorito(id, producto);
+        Usuario usuario = usuarioRepository.findById(idUsuario).orElse(null);
+        if (usuario == null) {
+            return ResponseEntity.badRequest().body("Usuario no encontrado");
+        }
+
+        Favorito favorito = new Favorito(id, usuario, producto);
         favoritoRepository.save(favorito);
         return ResponseEntity.ok("Favorito agregado");
     }
+
 
     @DeleteMapping("/eliminar")
     public ResponseEntity<String> eliminarFavorito(@RequestParam Long idUsuario, @RequestParam Long idProducto) {
