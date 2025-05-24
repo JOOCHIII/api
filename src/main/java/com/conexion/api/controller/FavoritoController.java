@@ -1,12 +1,12 @@
 package com.conexion.api.controller;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.conexion.api.model.Favorito;
 import com.conexion.api.model.FavoritoId;
+import com.conexion.api.model.Productos;
 import com.conexion.api.repository.FavoritoRepository;
 
 import java.util.List;
@@ -26,7 +26,8 @@ public class FavoritoController {
             return ResponseEntity.badRequest().body("El favorito ya existe");
         }
 
-        Favorito favorito = new Favorito(id);
+        Favorito favorito = new Favorito();
+        favorito.setId(id);
         favoritoRepository.save(favorito);
         return ResponseEntity.ok("Favorito agregado");
     }
@@ -43,9 +44,12 @@ public class FavoritoController {
         return ResponseEntity.ok("Favorito eliminado");
     }
 
-    @GetMapping("/usuario")
-    public ResponseEntity<List<Favorito>> obtenerFavoritos(@RequestParam Long idUsuario) {
-        List<Favorito> favoritos = favoritoRepository.findByIdIdUsuario(idUsuario);
+    @GetMapping("/{idUsuario}")
+    public ResponseEntity<List<Productos>> obtenerFavoritos(@PathVariable Long idUsuario) {
+        List<Productos> favoritos = favoritoRepository.findProductosFavoritosByUsuario(idUsuario);
+        if (favoritos.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
         return ResponseEntity.ok(favoritos);
     }
 }
