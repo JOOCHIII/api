@@ -1,6 +1,7 @@
 package com.conexion.api.controller;
 
 import com.conexion.api.model.Carrito;
+import com.conexion.api.model.CarritoId;
 import com.conexion.api.model.Productos;
 import com.conexion.api.model.Usuario;
 import com.conexion.api.repository.CarritoRepository;
@@ -27,7 +28,9 @@ public class CarritoController {
     private UsuarioRepository usuarioRepository;
 
     @PostMapping("/agregar")
-    public ResponseEntity<?> agregarAlCarrito(@RequestParam Long idUsuario, @RequestParam Long idProducto, @RequestParam int cantidad) {
+    public ResponseEntity<?> agregarAlCarrito(@RequestParam Long idUsuario,
+                                              @RequestParam Long idProducto,
+                                              @RequestParam int cantidad) {
         Usuario usuario = usuarioRepository.findById(idUsuario).orElse(null);
         Productos producto = productosRepository.findById(idProducto).orElse(null);
 
@@ -35,10 +38,13 @@ public class CarritoController {
             return ResponseEntity.badRequest().body("Usuario o producto no encontrado");
         }
 
+        CarritoId carritoId = new CarritoId(idUsuario, idProducto);
         Carrito carrito = new Carrito();
+        carrito.setId(carritoId);
         carrito.setUsuario(usuario);
         carrito.setProducto(producto);
         carrito.setCantidad(cantidad);
+
         carritoRepository.save(carrito);
 
         return ResponseEntity.ok("Producto agregado al carrito");

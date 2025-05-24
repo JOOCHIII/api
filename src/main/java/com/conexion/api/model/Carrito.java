@@ -7,15 +7,16 @@ import java.time.LocalDateTime;
 @Table(name = "carrito")
 public class Carrito {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @EmbeddedId
+    private CarritoId id;
 
     @ManyToOne
+    @MapsId("idUsuario")
     @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
 
     @ManyToOne
+    @MapsId("idProducto")
     @JoinColumn(name = "id_producto", nullable = false)
     private Productos producto;
 
@@ -27,44 +28,43 @@ public class Carrito {
         this.fechaAgregado = LocalDateTime.now();
     }
 
-	public Long getId() {
-		return id;
-	}
+    public CarritoId getId() {
+        return id;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public void setId(CarritoId id) {
+        this.id = id;
+    }
 
-	public Usuario getUsuario() {
-		return usuario;
-	}
+    public Usuario getUsuario() {
+        return usuario;
+    }
 
-	public void setUsuario(Usuario usuario) {
-		this.usuario = usuario;
-	}
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
 
-	public Productos getProducto() {
-		return producto;
-	}
+    public Productos getProducto() {
+        return producto;
+    }
 
-	public void setProducto(Productos producto) {
-		this.producto = producto;
-	}
+    public void setProducto(Productos producto) {
+        this.producto = producto;
+    }
 
-	public int getCantidad() {
-		return cantidad;
-	}
+    public int getCantidad() {
+        return cantidad;
+    }
 
-	public void setCantidad(int cantidad) {
-		this.cantidad = cantidad;
-	}
+    public void setCantidad(int cantidad) {
+        this.cantidad = cantidad;
+    }
 
-	public LocalDateTime getFechaAgregado() {
-		return fechaAgregado;
-	}
+    public LocalDateTime getFechaAgregado() {
+        return fechaAgregado;
+    }
 
-	public void setFechaAgregado(LocalDateTime fechaAgregado) {
-		this.fechaAgregado = fechaAgregado;
-	}
-
+    public void setFechaAgregado(LocalDateTime fechaAgregado) {
+        this.fechaAgregado = fechaAgregado;
+    }
 }
