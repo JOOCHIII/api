@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.*;
 
 import com.conexion.api.model.Favorito;
 import com.conexion.api.model.FavoritoId;
+import com.conexion.api.model.Productos;
 import com.conexion.api.repository.FavoritoRepository;
+import com.conexion.api.repository.ProductosRepository;
 
 import java.util.List;
 
@@ -18,6 +20,9 @@ public class FavoritoController {
     @Autowired
     private FavoritoRepository favoritoRepository;
 
+    @Autowired
+    private ProductosRepository productosRepository;
+    
     @PostMapping("/agregar")
     public ResponseEntity<String> agregarFavorito(@RequestParam Long idUsuario, @RequestParam Long idProducto) {
         FavoritoId id = new FavoritoId(idUsuario, idProducto);
@@ -26,10 +31,17 @@ public class FavoritoController {
             return ResponseEntity.badRequest().body("El favorito ya existe");
         }
 
-        Favorito favorito = new Favorito(id);
+        // Buscar el producto
+        Productos producto = productosRepository.findById(idProducto).orElse(null);
+        if (producto == null) {
+            return ResponseEntity.badRequest().body("Producto no encontrado");
+        }
+
+        Favorito favorito = new Favorito(id, producto);
         favoritoRepository.save(favorito);
         return ResponseEntity.ok("Favorito agregado");
     }
+
 
     @DeleteMapping("/eliminar")
     public ResponseEntity<String> eliminarFavorito(@RequestParam Long idUsuario, @RequestParam Long idProducto) {
@@ -44,8 +56,12 @@ public class FavoritoController {
     }
 
     @GetMapping("/usuario")
-    public ResponseEntity<List<Favorito>> obtenerFavoritos(@RequestParam Long idUsuario) {
-        List<Favorito> favoritos = favoritoRepository.findByIdIdUsuario(idUsuario);
+    public ResponseEntity<List<Productos>> obtenerFavoritos(@RequestParam Long idUsuario) {
+        List<Productos> favoritos = favoritoRepository.findProductosFavoritosByUsuario(idUsuario);
+        if (favoritos.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
         return ResponseEntity.ok(favoritos);
     }
+
 }
