@@ -178,12 +178,7 @@ public class ReporteController {
 
         // Obtener reportes filtrados si se pasó estado, si no, todos los asignados
         List<Reporte> reportes = reporteRepo.findByIdUsuarioAsignado(idUsuario);
-        if (estado != null && !estado.isBlank()) {
-            reportes = reportes.stream()
-                               .filter(r -> estado.equalsIgnoreCase(r.getEstado()))
-                               .toList();
-        }
-
+       
         // Obtener nombre del usuario asignado una sola vez
         String nombreAsignado = usuarioRepo.findById((long) idUsuario)
             .map(Usuario::getNombrecompleto)
