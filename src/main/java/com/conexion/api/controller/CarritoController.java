@@ -69,4 +69,20 @@ public class CarritoController {
             return ResponseEntity.badRequest().body("Producto no encontrado en el carrito");
         }
     }
+
+    @Transactional
+    @PutMapping("/actualizarCantidad")
+    public ResponseEntity<?> actualizarCantidad(@RequestParam Long idUsuario,
+                                                @RequestParam Long idProducto,
+                                                @RequestParam int cantidad) {
+        CarritoId carritoId = new CarritoId(idUsuario, idProducto);
+        if (carritoRepository.existsById(carritoId)) {
+            Carrito carrito = carritoRepository.findById(carritoId).get();
+            carrito.setCantidad(cantidad);
+            carritoRepository.save(carrito);
+            return ResponseEntity.ok("Cantidad actualizada");
+        } else {
+            return ResponseEntity.badRequest().body("Producto no encontrado en el carrito");
+        }
+    }
 }
