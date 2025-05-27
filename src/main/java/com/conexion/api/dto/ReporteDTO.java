@@ -3,6 +3,7 @@ package com.conexion.api.dto;
 
 import com.conexion.api.model.Reporte;
 import java.sql.Timestamp;
+import java.util.List;
 
 
 public class ReporteDTO {
@@ -13,6 +14,11 @@ public class ReporteDTO {
     private String nombreAsignado;
     private String estado;
     private Timestamp fecha; // ✅ Campo nuevo
+    
+    private List<String> comentarios;
+    public List<String> getComentarios() {
+        return comentarios;
+    }
 
     public ReporteDTO() {
     }
