@@ -170,6 +170,35 @@ public class ReporteController {
         reporteRepo.save(reporte);
         return ResponseEntity.ok("Reporte asignado correctamente");
     }
+    
+    @GetMapping("/asignados")
+    public ResponseEntity<List<ReporteDTO>> obtenerReportesAsignadosPorEstado(
+            @RequestParam("id_usuario") int idUsuario,
+            @RequestParam(value = "estado", required = false) String estado) {
+
+        // Obtener reportes filtrados si se pasó estado, si no, todos los asignados
+        List<Reporte> reportes = reporteRepo.findByIdUsuarioAsignado(idUsuario);
+        if (estado != null && !estado.isBlank()) {
+            reportes = reportes.stream()
+                               .filter(r -> estado.equalsIgnoreCase(r.getEstado()))
+                               .toList();
+        }
+
+        // Obtener nombre del usuario asignado una sola vez
+        String nombreAsignado = usuarioRepo.findById((long) idUsuario)
+            .map(Usuario::getNombrecompleto)
+            .orElse("No asignado");
+
+        // Convertir a DTOs
+        List<ReporteDTO> dtos = reportes.stream().map(reporte -> {
+            ReporteDTO dto = new ReporteDTO(reporte, nombreAsignado);
+            dto.setFecha(reporte.getFechaCreacion());
+            return dto;
+        }).toList();
+
+        return ResponseEntity.ok(dtos);
+    }
+
 
 
     @GetMapping("/listar")
