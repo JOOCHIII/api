@@ -87,31 +87,33 @@ public class NotificacionController {
     }
     
     @GetMapping("/{id}/detalle-reporte")
-    public ResponseEntity<?> obtenerDetalleYMarcarLeida(@PathVariable int id) {
+    public ResponseEntity<?> obtenerDetalleReporte(@PathVariable Integer id) {
         try {
             Optional<Notificacion> notiOpt = notiRepo.findById(id);
             if (notiOpt.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Notificación no encontrada");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Notificación no encontrada con ID: " + id);
             }
 
             Notificacion noti = notiOpt.get();
-            noti.setLeido(true);
-            notiRepo.save(noti);
+            Integer idReporte = noti.getIdReporte();
 
-            if (noti.getIdReporte() == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La notificación no está vinculada a ningún reporte");
+            if (idReporte == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("La notificación no está vinculada a ningún reporte");
             }
 
-            Optional<Reporte> reporteOpt = reporteRepo.findById(noti.getIdReporte());
+            Optional<Reporte> reporteOpt = reporteRepo.findById(idReporte);
             if (reporteOpt.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reporte no encontrado");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Reporte no encontrado con ID: " + idReporte);
             }
 
             return ResponseEntity.ok(reporteOpt.get());
         } catch (Exception e) {
-            // Opcional: loguear el error aquí
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Error inesperado: " + e.getMessage());
+                .body("Error interno: " + e.getMessage());
         }
+    
     }
 }
