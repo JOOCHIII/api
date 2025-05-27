@@ -17,6 +17,10 @@ public class Notificacion {
     private boolean leido;
     private Timestamp fecha;
     private String tipoDestino; 
+    
+    @Column(name = "id_reporte")
+    private Integer idReporte;
+
 
     // Getters y setters
     public int getId() {
@@ -59,5 +63,12 @@ public class Notificacion {
     }
     public void setTipoDestino(String tipoDestino) {
         this.tipoDestino = tipoDestino;
+    }
+    public Integer getIdReporte() {
+        return idReporte;
+    }
+
+    public void setIdReporte(Integer idReporte) {
+        this.idReporte = idReporte;
     }
 }

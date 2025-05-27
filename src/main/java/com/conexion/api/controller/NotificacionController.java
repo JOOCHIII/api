@@ -10,7 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.conexion.api.model.Notificacion;
+import com.conexion.api.model.Reporte;
 import com.conexion.api.repository.NotificacionRepository;
+import com.conexion.api.repository.ReporteRepository;
 
 @RestController
 @RequestMapping("/api/notificacion")
@@ -19,6 +21,8 @@ public class NotificacionController {
 
     @Autowired
     private NotificacionRepository notiRepo;
+ 
+    private ReporteRepository reporteRepo;
 
     // ✅ 1. Obtener notificaciones no leídas por usuario y destino
     @GetMapping("/usuario")
@@ -80,5 +84,29 @@ public class NotificacionController {
 
         return ResponseEntity.ok("Todas las notificaciones marcadas como leídas");
     }
+    
+
+@GetMapping("/{id}/detalle-reporte")
+public ResponseEntity<?> obtenerDetalleYMarcarLeida(@PathVariable int id) {
+    Optional<Notificacion> notiOpt = notiRepo.findById(id);
+    if (notiOpt.isEmpty()) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Notificación no encontrada");
+    }
+
+    Notificacion noti = notiOpt.get();
+    noti.setLeido(true);
+    notiRepo.save(noti);
+
+    if (noti.getIdReporte() == null) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La notificación no está vinculada a ningún reporte");
+    }
+
+    Optional<Reporte> reporteOpt = reporteRepo.findById(noti.getIdReporte());
+    if (reporteOpt.isEmpty()) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reporte no encontrado");
+    }
+
+    return ResponseEntity.ok(reporteOpt.get());
+}
 
 }
