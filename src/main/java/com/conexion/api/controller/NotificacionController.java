@@ -19,11 +19,19 @@ import com.conexion.api.repository.ReporteRepository;
 @CrossOrigin(origins = "*")
 public class NotificacionController {
 
-    @Autowired
-    private NotificacionRepository notiRepo;
+	 private final NotificacionRepository notiRepo;
+	    private final ReporteRepository reporteRepo;
 
-    @Autowired
-    private ReporteRepository reporteRepo;
+	    @Autowired
+	    public NotificacionController(NotificacionRepository notiRepo, ReporteRepository reporteRepo) {
+	        this.notiRepo = notiRepo;
+	        this.reporteRepo = reporteRepo;
+	    }
+//PRUEBA LUEGO BORRAR 
+	    @GetMapping("/test-inyeccion")
+	    public ResponseEntity<String> testInyeccion() {
+	        return ResponseEntity.ok("ReporteRepo es " + (reporteRepo == null ? "NULL" : "OK"));
+	    }
 
     // ✅ 1. Obtener notificaciones no leídas por usuario y destino
     @GetMapping("/usuario")
