@@ -85,28 +85,32 @@ public class NotificacionController {
         return ResponseEntity.ok("Todas las notificaciones marcadas como leídas");
     }
     
+    @GetMapping("/{id}/detalle-reporte")
+    public ResponseEntity<?> obtenerDetalleYMarcarLeida(@PathVariable int id) {
+        try {
+            Optional<Notificacion> notiOpt = notiRepo.findById(id);
+            if (notiOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Notificación no encontrada");
+            }
 
-@GetMapping("/{id}/detalle-reporte")
-public ResponseEntity<?> obtenerDetalleYMarcarLeida(@PathVariable int id) {
-    Optional<Notificacion> notiOpt = notiRepo.findById(id);
-    if (notiOpt.isEmpty()) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Notificación no encontrada");
+            Notificacion noti = notiOpt.get();
+            noti.setLeido(true);
+            notiRepo.save(noti);
+
+            if (noti.getIdReporte() == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La notificación no está vinculada a ningún reporte");
+            }
+
+            Optional<Reporte> reporteOpt = reporteRepo.findById(noti.getIdReporte());
+            if (reporteOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reporte no encontrado");
+            }
+
+            return ResponseEntity.ok(reporteOpt.get());
+        } catch (Exception e) {
+            // Opcional: loguear el error aquí
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error inesperado: " + e.getMessage());
+        }
     }
-
-    Notificacion noti = notiOpt.get();
-    noti.setLeido(true);
-    notiRepo.save(noti);
-
-    if (noti.getIdReporte() == null) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La notificación no está vinculada a ningún reporte");
-    }
-
-    Optional<Reporte> reporteOpt = reporteRepo.findById(noti.getIdReporte());
-    if (reporteOpt.isEmpty()) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reporte no encontrado");
-    }
-
-    return ResponseEntity.ok(reporteOpt.get());
-}
-
 }
