@@ -50,6 +50,7 @@ public class ReporteController {
         reporte.setDescripcion(datos.getDescripcion());
         reporte.setEstado("pendiente");
         reporte.setFechaCreacion(new Timestamp(System.currentTimeMillis()));
+        
         reporteRepo.save(reporte);
 
         // Obtener info usuario creador
@@ -99,6 +100,7 @@ public class ReporteController {
             noti.setLeido(false);
             noti.setTipoDestino("tienda");
             noti.setFecha(new Timestamp(System.currentTimeMillis()));
+            
             notiRepo.save(noti);
 
             return ResponseEntity.ok("Estado actualizado y usuario notificado");
