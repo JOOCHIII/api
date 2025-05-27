@@ -9,7 +9,7 @@ import jakarta.persistence.Id;
 @Entity
 public class Reporte {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
     private int idUsuario;
     private String asunto;
     private String descripcion;

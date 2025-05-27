@@ -51,7 +51,9 @@ public class ReporteController {
         reporte.setEstado("pendiente");
         reporte.setFechaCreacion(new Timestamp(System.currentTimeMillis()));
         
+        
         reporteRepo.save(reporte);
+        reporteRepo.flush(); 
 
         // Obtener info usuario creador
         Optional<Usuario> usuarioOpt = usuarioRepo.findById((long) datos.getIdUsuario());
@@ -64,6 +66,7 @@ public class ReporteController {
         notiAdmin.setLeido(false);
         notiAdmin.setTipoDestino("incidencias");
         notiAdmin.setFecha(new Timestamp(System.currentTimeMillis()));
+        notiAdmin.setIdReporte(reporte.getId());
         notiRepo.save(notiAdmin);
 
         // Notificación al usuario creador
@@ -73,6 +76,7 @@ public class ReporteController {
         notiUsuario.setLeido(false);
         notiUsuario.setTipoDestino("tienda");
         notiUsuario.setFecha(new Timestamp(System.currentTimeMillis()));
+        notiUsuario.setIdReporte(reporte.getId());
         notiRepo.save(notiUsuario);
 
         return ResponseEntity.ok("Reporte creado y notificaciones enviadas");
