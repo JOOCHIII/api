@@ -21,7 +21,8 @@ public class NotificacionController {
 
     @Autowired
     private NotificacionRepository notiRepo;
- 
+
+    @Autowired
     private ReporteRepository reporteRepo;
 
     // ✅ 1. Obtener notificaciones no leídas por usuario y destino
