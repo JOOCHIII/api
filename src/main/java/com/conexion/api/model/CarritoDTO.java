@@ -4,32 +4,69 @@ import java.util.List;
 
 public class CarritoDTO {
     private Long idProducto;
-    private String nombreProducto;
-    private String talla;
+    private String nombre;
+    private String descripcion;
+    private double precio;
     private int cantidad;
-    private double precioUnitario;
-    private double subtotal;
-    private List<String> fotos;
+    private String talla;
 
-    public CarritoDTO(Long idProducto, String nombreProducto, String talla, int cantidad, double precioUnitario, List<String> fotos) {
+    public CarritoDTO(Long idProducto, String nombre, String descripcion, double precio, int cantidad, String talla) {
         this.idProducto = idProducto;
-        this.nombreProducto = nombreProducto;
-        this.talla = talla;
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.precio = precio;
         this.cantidad = cantidad;
-        this.precioUnitario = precioUnitario;
-        this.subtotal = precioUnitario * cantidad;
-        this.fotos = fotos;
+        this.talla = talla;
     }
 
-    // Getters y setters (puedes usar lombok si quieres)
+	public Long getIdProducto() {
+		return idProducto;
+	}
 
-    public Long getIdProducto() { return idProducto; }
-    public String getNombreProducto() { return nombreProducto; }
-    public String getTalla() { return talla; }
-    public int getCantidad() { return cantidad; }
-    public double getPrecioUnitario() { return precioUnitario; }
-    public double getSubtotal() { return subtotal; }
-    public List<String> getFotos() { return fotos; }
+	public void setIdProducto(Long idProducto) {
+		this.idProducto = idProducto;
+	}
 
-    // No setters si solo quieres respuesta inmutable
+	public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public String getDescripcion() {
+		return descripcion;
+	}
+
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
+	}
+
+	public double getPrecio() {
+		return precio;
+	}
+
+	public void setPrecio(double precio) {
+		this.precio = precio;
+	}
+
+	public int getCantidad() {
+		return cantidad;
+	}
+
+	public void setCantidad(int cantidad) {
+		this.cantidad = cantidad;
+	}
+
+	public String getTalla() {
+		return talla;
+	}
+
+	public void setTalla(String talla) {
+		this.talla = talla;
+	}
+
+    // getters y setters
 }
+

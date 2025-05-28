@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/carrito")
@@ -60,23 +61,24 @@ public class CarritoController {
     public ResponseEntity<List<CarritoDTO>> obtenerCarritoUsuario(@RequestParam Long idUsuario) {
         List<Carrito> carrito = carritoRepository.findByUsuarioId(idUsuario);
 
-        List<CarritoDTO> carritoDTO = carrito.stream().map(c -> {
-            List<String> fotosUrls = c.getProducto().getFotos().stream()
-                .map(f -> f.getUrlFoto())
-                .toList();
+        List<CarritoDTO> carritoDTOs = carrito.stream()
+            .map(c -> {
+                if (c.getProducto() == null) return null;  // Por si hay productos nulos, evita null pointer
+                return new CarritoDTO(
+                    c.getProducto().getId(),
+                    c.getProducto().getNombre(),
+                    c.getProducto().getDescripcion(),
+                    c.getProducto().getPrecio(),
+                    c.getCantidad(),
+                    c.getTalla()
+                );
+            })
+            .filter(dto -> dto != null) // elimina posibles nulls
+            .collect(Collectors.toList());
 
-            return new CarritoDTO(
-                c.getProducto().getId(),
-                c.getProducto().getNombre(),
-                c.getId().getTalla(),  // talla desde id compuesto
-                c.getCantidad(),
-                c.getProducto().getPrecio(),
-                fotosUrls
-            );
-        }).toList();
-
-        return ResponseEntity.ok(carritoDTO);
+        return ResponseEntity.ok(carritoDTOs);
     }
+
 
 
     @Transactional
