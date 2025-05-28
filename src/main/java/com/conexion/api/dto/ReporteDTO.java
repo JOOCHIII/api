@@ -14,12 +14,7 @@ public class ReporteDTO {
     private String nombreAsignado;
     private String estado;
     private Timestamp fecha; // ✅ Campo nuevo
-    
-    private List<String> comentarios;
-    public List<String> getComentarios() {
-        return comentarios;
-    }
-
+ 
     public ReporteDTO() {
     }
     
