@@ -1,7 +1,6 @@
 package com.conexion.api.model;
 
 import jakarta.persistence.*;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -25,9 +24,6 @@ public class Carrito implements Serializable {
     @Column(name = "cantidad", nullable = false)
     private int cantidad;
 
-    @Column(name = "talla")
-    private String talla;
-
     @Column(name = "fecha_agregado")
     private LocalDateTime fechaAgregado;
 
@@ -40,7 +36,6 @@ public class Carrito implements Serializable {
         this.cantidad = cantidad;
         this.fechaAgregado = fechaAgregado;
     }
-
 
     // Getters y setters
     public CarritoId getId() {
@@ -75,14 +70,6 @@ public class Carrito implements Serializable {
         this.cantidad = cantidad;
     }
 
-    public String getTalla() {
-        return talla;
-    }
-
-    public void setTalla(String talla) {
-        this.talla = talla;
-    }
-
     public LocalDateTime getFechaAgregado() {
         return fechaAgregado;
     }
@@ -92,6 +79,11 @@ public class Carrito implements Serializable {
     }
 
     public double getSubtotal() {
-        return producto.getPrecio() * cantidad;
+        return producto != null ? producto.getPrecio() * cantidad : 0;
+    }
+
+    // Getter indirecto para la talla (por comodidad)
+    public String getTalla() {
+        return id != null ? id.getTalla() : null;
     }
 }
