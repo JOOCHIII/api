@@ -20,7 +20,6 @@ public class Productos {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-
     private Long id;
 
     private String nombre;
@@ -33,6 +32,10 @@ public class Productos {
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<FotoProducto> fotos = new ArrayList<>();
+
+    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<TallaProducto> tallas = new ArrayList<>();
 
     // Getters y Setters
     public Long getId() { return id; }
@@ -58,4 +61,7 @@ public class Productos {
 
     public List<FotoProducto> getFotos() { return fotos; }
     public void setFotos(List<FotoProducto> fotos) { this.fotos = fotos; }
+
+    public List<TallaProducto> getTallas() { return tallas; }
+    public void setTallas(List<TallaProducto> tallas) { this.tallas = tallas; }
 }

@@ -1,32 +1,31 @@
 package com.conexion.api.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "carrito")
-public class Carrito {
+public class Carrito implements Serializable {
 
     @EmbeddedId
     private CarritoId id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("idUsuario")
-    @JoinColumn(name = "id_usuario", nullable = false)
+    @JoinColumn(name = "id_usuario")
     private Usuario usuario;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("idProducto")
-    @JoinColumn(name = "id_producto", nullable = false)
+    @JoinColumn(name = "id_producto")
     private Productos producto;
 
+    @Column(name = "cantidad")
     private int cantidad;
 
-    private LocalDateTime fechaAgregado;
+    public Carrito() {}
 
-    public Carrito() {
-        this.fechaAgregado = LocalDateTime.now();
-    }
+    // Getters y setters
 
     public CarritoId getId() {
         return id;
@@ -60,11 +59,17 @@ public class Carrito {
         this.cantidad = cantidad;
     }
 
-    public LocalDateTime getFechaAgregado() {
-        return fechaAgregado;
+    public String getTalla() {
+        return id != null ? id.getTalla() : null;
     }
 
-    public void setFechaAgregado(LocalDateTime fechaAgregado) {
-        this.fechaAgregado = fechaAgregado;
+    public void setTalla(String talla) {
+        if (id != null) {
+            id.setTalla(talla);
+        }
+    }
+
+    public double getSubtotal() {
+        return producto.getPrecio() * cantidad;
     }
 }
