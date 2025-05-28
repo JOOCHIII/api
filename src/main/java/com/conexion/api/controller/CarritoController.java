@@ -1,6 +1,7 @@
 package com.conexion.api.controller;
 
 import com.conexion.api.model.Carrito;
+import com.conexion.api.model.CarritoDTO;
 import com.conexion.api.model.CarritoId;
 import com.conexion.api.model.Productos;
 import com.conexion.api.model.Usuario;
@@ -56,10 +57,27 @@ public class CarritoController {
     }
 
     @GetMapping("/usuario")
-    public ResponseEntity<List<Carrito>> obtenerCarritoUsuario(@RequestParam Long idUsuario) {
+    public ResponseEntity<List<CarritoDTO>> obtenerCarritoUsuario(@RequestParam Long idUsuario) {
         List<Carrito> carrito = carritoRepository.findByUsuarioId(idUsuario);
-        return ResponseEntity.ok(carrito);
+
+        List<CarritoDTO> carritoDTO = carrito.stream().map(c -> {
+            List<String> fotosUrls = c.getProducto().getFotos().stream()
+                .map(f -> f.getUrlFoto())
+                .toList();
+
+            return new CarritoDTO(
+                c.getProducto().getId(),
+                c.getProducto().getNombre(),
+                c.getId().getTalla(),  // talla desde id compuesto
+                c.getCantidad(),
+                c.getProducto().getPrecio(),
+                fotosUrls
+            );
+        }).toList();
+
+        return ResponseEntity.ok(carritoDTO);
     }
+
 
     @Transactional
     @DeleteMapping("/eliminar")
