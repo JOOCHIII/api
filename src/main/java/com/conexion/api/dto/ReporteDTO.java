@@ -14,6 +14,7 @@ public class ReporteDTO {
     private String nombreAsignado;
     private String estado;
     private Timestamp fecha; // ✅ Campo nuevo
+    private String nombreUsuario; 
  
     public ReporteDTO() {
     }
@@ -94,6 +95,14 @@ public class ReporteDTO {
     public void setFecha(Timestamp fecha) { // ✅ Setter correcto
         this.fecha = fecha;
     }
+
+	public String getNombreUsuario() {
+		return nombreUsuario;
+	}
+
+	public void setNombreUsuario(String nombreUsuario) {
+		this.nombreUsuario = nombreUsuario;
+	}
 
 
 }
