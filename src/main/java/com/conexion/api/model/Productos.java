@@ -29,7 +29,8 @@ public class Productos {
     private int stock;
     private String categoria;
     private boolean destacado;
-
+    @Column(name = "talla")
+    private String talla;
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<FotoProducto> fotos = new ArrayList<>();
@@ -56,6 +57,8 @@ public class Productos {
     public boolean isDestacado() { return destacado; }
     public void setDestacado(boolean destacado) { this.destacado = destacado; }
 
+    public String getTalla() { return talla; }
+    public void setTalla(String talla) { this.talla = talla; }
     public List<FotoProducto> getFotos() { return fotos; }
     public void setFotos(List<FotoProducto> fotos) { this.fotos = fotos; }
 }

@@ -32,6 +32,7 @@ public class CarritoController {
     @PostMapping("/agregar")
     public ResponseEntity<?> agregarAlCarrito(@RequestParam Long idUsuario,
                                               @RequestParam Long idProducto,
+                                              @RequestParam String talla,
                                               @RequestParam int cantidad) {
         Usuario usuario = usuarioRepository.findById(idUsuario).orElse(null);
         Productos producto = productosRepository.findById(idProducto).orElse(null);
@@ -40,12 +41,13 @@ public class CarritoController {
             return ResponseEntity.badRequest().body("Usuario o producto no encontrado");
         }
 
-        CarritoId carritoId = new CarritoId(idUsuario, idProducto);
+        CarritoId carritoId = new CarritoId(idUsuario, idProducto, talla);
         Carrito carrito = new Carrito();
         carrito.setId(carritoId);
         carrito.setUsuario(usuario);
         carrito.setProducto(producto);
         carrito.setCantidad(cantidad);
+        carrito.setTalla(talla);  // También seteamos la talla en Carrito para mantener sincronizado el id embebido
 
         carritoRepository.save(carrito);
 
@@ -60,8 +62,10 @@ public class CarritoController {
 
     @Transactional
     @DeleteMapping("/eliminar")
-    public ResponseEntity<?> eliminarDelCarrito(@RequestParam Long idUsuario, @RequestParam Long idProducto) {
-        CarritoId carritoId = new CarritoId(idUsuario, idProducto);
+    public ResponseEntity<?> eliminarDelCarrito(@RequestParam Long idUsuario,
+                                                @RequestParam Long idProducto,
+                                                @RequestParam String talla) {
+        CarritoId carritoId = new CarritoId(idUsuario, idProducto, talla);
         if (carritoRepository.existsById(carritoId)) {
             carritoRepository.deleteById(carritoId);
             return ResponseEntity.ok("Producto eliminado del carrito");
@@ -74,8 +78,9 @@ public class CarritoController {
     @PutMapping("/actualizarCantidad")
     public ResponseEntity<?> actualizarCantidad(@RequestParam Long idUsuario,
                                                 @RequestParam Long idProducto,
+                                                @RequestParam String talla,
                                                 @RequestParam int cantidad) {
-        CarritoId carritoId = new CarritoId(idUsuario, idProducto);
+        CarritoId carritoId = new CarritoId(idUsuario, idProducto, talla);
         if (carritoRepository.existsById(carritoId)) {
             Carrito carrito = carritoRepository.findById(carritoId).get();
             carrito.setCantidad(cantidad);

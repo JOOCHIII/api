@@ -67,4 +67,16 @@ public class Carrito {
     public void setFechaAgregado(LocalDateTime fechaAgregado) {
         this.fechaAgregado = fechaAgregado;
     }
+
+    // Nuevo getter y setter para talla, que usan el id embebido
+    public String getTalla() {
+        return (id != null) ? id.getTalla() : null;
+    }
+
+    public void setTalla(String talla) {
+        if (id == null) {
+            id = new CarritoId();
+        }
+        id.setTalla(talla);
+    }
 }
