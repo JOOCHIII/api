@@ -15,7 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -36,25 +38,26 @@ public class CarritoController {
                                               @RequestParam Long idProducto,
                                               @RequestParam String talla,
                                               @RequestParam int cantidad) {
-        Usuario usuario = usuarioRepository.findById(idUsuario).orElse(null);
-        Productos producto = productosRepository.findById(idProducto).orElse(null);
-
-        if (usuario == null || producto == null) {
-            return ResponseEntity.badRequest().body("Usuario o producto no encontrado");
-        }
-
         CarritoId carritoId = new CarritoId(idUsuario, idProducto, talla);
-        Carrito carrito = carritoRepository.findById(carritoId).orElse(new Carrito());
+        Optional<Carrito> carritoExistente = carritoRepository.findById(carritoId);
 
-        carrito.setId(carritoId);
-        carrito.setUsuario(usuario);
-        carrito.setProducto(producto);
-        carrito.setTalla(talla);
-        carrito.setCantidad(carrito.getCantidad() + cantidad);  // Si ya existía suma cantidad
+        if (carritoExistente.isPresent()) {
+            Carrito carrito = carritoExistente.get();
+            carrito.setCantidad(carrito.getCantidad() + cantidad);
+            carrito.setFechaAgregado(LocalDateTime.now());
+            carritoRepository.save(carrito);
+            return ResponseEntity.ok("Producto actualizado en el carrito");
+        } else {
+            Usuario usuario = usuarioRepository.findById(idUsuario).orElse(null);
+            Productos producto = productosRepository.findById(idProducto).orElse(null);
+            if (usuario == null || producto == null) {
+                return ResponseEntity.badRequest().body("Usuario o producto no encontrado");
+            }
 
-        carritoRepository.save(carrito);
-
-        return ResponseEntity.ok("Producto agregado al carrito");
+            Carrito nuevoCarrito = new Carrito(carritoId, usuario, producto, cantidad, LocalDateTime.now());
+            carritoRepository.save(nuevoCarrito);
+            return ResponseEntity.ok("Producto agregado al carrito");
+        }
     }
 
     @GetMapping("/usuario")
@@ -63,7 +66,7 @@ public class CarritoController {
 
         List<CarritoDTO> carritoDTOs = carrito.stream()
             .map(c -> {
-                if (c.getProducto() == null) return null;  // Por si hay productos nulos, evita null pointer
+                if (c.getProducto() == null) return null;
                 return new CarritoDTO(
                     c.getProducto().getId(),
                     c.getProducto().getNombre(),
@@ -73,13 +76,11 @@ public class CarritoController {
                     c.getTalla()
                 );
             })
-            .filter(dto -> dto != null) // elimina posibles nulls
+            .filter(dto -> dto != null)
             .collect(Collectors.toList());
 
         return ResponseEntity.ok(carritoDTOs);
     }
-
-
 
     @Transactional
     @DeleteMapping("/eliminar")
@@ -102,8 +103,10 @@ public class CarritoController {
                                                 @RequestParam String talla,
                                                 @RequestParam int cantidad) {
         CarritoId carritoId = new CarritoId(idUsuario, idProducto, talla);
-        if (carritoRepository.existsById(carritoId)) {
-            Carrito carrito = carritoRepository.findById(carritoId).get();
+        Optional<Carrito> carritoOptional = carritoRepository.findById(carritoId);
+
+        if (carritoOptional.isPresent()) {
+            Carrito carrito = carritoOptional.get();
             carrito.setCantidad(cantidad);
             carritoRepository.save(carrito);
             return ResponseEntity.ok("Cantidad actualizada");

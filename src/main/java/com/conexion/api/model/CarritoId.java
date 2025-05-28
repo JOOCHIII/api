@@ -1,11 +1,15 @@
 package com.conexion.api.model;
 
-import java.io.Serializable;
-import java.util.Objects;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
+import java.io.Serializable;
+import java.util.Objects;
+
+/**
+ * Clave compuesta para la entidad Carrito.
+ * Incluye idUsuario, idProducto y talla.
+ */
 @Embeddable
 public class CarritoId implements Serializable {
 
@@ -18,7 +22,8 @@ public class CarritoId implements Serializable {
     @Column(name = "talla")
     private String talla;
 
-    public CarritoId() {}
+    public CarritoId() {
+    }
 
     public CarritoId(Long idUsuario, Long idProducto, String talla) {
         this.idUsuario = idUsuario;
@@ -26,17 +31,32 @@ public class CarritoId implements Serializable {
         this.talla = talla;
     }
 
-    // Getters y setters
-    public Long getIdUsuario() { return idUsuario; }
-    public void setIdUsuario(Long idUsuario) { this.idUsuario = idUsuario; }
+    // Getters y Setters
+    public Long getIdUsuario() {
+        return idUsuario;
+    }
 
-    public Long getIdProducto() { return idProducto; }
-    public void setIdProducto(Long idProducto) { this.idProducto = idProducto; }
+    public void setIdUsuario(Long idUsuario) {
+        this.idUsuario = idUsuario;
+    }
 
-    public String getTalla() { return talla; }
-    public void setTalla(String talla) { this.talla = talla; }
+    public Long getIdProducto() {
+        return idProducto;
+    }
 
-    // equals y hashCode (muy importantes para clave compuesta)
+    public void setIdProducto(Long idProducto) {
+        this.idProducto = idProducto;
+    }
+
+    public String getTalla() {
+        return talla;
+    }
+
+    public void setTalla(String talla) {
+        this.talla = talla;
+    }
+
+    // equals y hashCode (obligatorios en ID compuesta)
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
