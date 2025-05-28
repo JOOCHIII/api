@@ -38,6 +38,14 @@ public class CarritoController {
                                               @RequestParam Long idProducto,
                                               @RequestParam String talla,
                                               @RequestParam int cantidad) {
+        // Evitar valores nulos o vacíos en talla
+        if (talla == null || talla.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("El parámetro talla es obligatorio");
+        }
+        if (cantidad <= 0) {
+            return ResponseEntity.badRequest().body("La cantidad debe ser mayor que 0");
+        }
+
         CarritoId carritoId = new CarritoId(idUsuario, idProducto, talla);
         Optional<Carrito> carritoExistente = carritoRepository.findById(carritoId);
 
@@ -48,13 +56,14 @@ public class CarritoController {
             carritoRepository.save(carrito);
             return ResponseEntity.ok("Producto actualizado en el carrito");
         } else {
-            Usuario usuario = usuarioRepository.findById(idUsuario).orElse(null);
-            Productos producto = productosRepository.findById(idProducto).orElse(null);
-            if (usuario == null || producto == null) {
+            Optional<Usuario> usuarioOpt = usuarioRepository.findById(idUsuario);
+            Optional<Productos> productoOpt = productosRepository.findById(idProducto);
+
+            if (usuarioOpt.isEmpty() || productoOpt.isEmpty()) {
                 return ResponseEntity.badRequest().body("Usuario o producto no encontrado");
             }
 
-            Carrito nuevoCarrito = new Carrito(carritoId, usuario, producto, cantidad, LocalDateTime.now());
+            Carrito nuevoCarrito = new Carrito(carritoId, usuarioOpt.get(), productoOpt.get(), cantidad, LocalDateTime.now());
             carritoRepository.save(nuevoCarrito);
             return ResponseEntity.ok("Producto agregado al carrito");
         }
@@ -65,18 +74,15 @@ public class CarritoController {
         List<Carrito> carrito = carritoRepository.findByUsuarioId(idUsuario);
 
         List<CarritoDTO> carritoDTOs = carrito.stream()
-            .map(c -> {
-                if (c.getProducto() == null) return null;
-                return new CarritoDTO(
-                    c.getProducto().getId(),
-                    c.getProducto().getNombre(),
-                    c.getProducto().getDescripcion(),
-                    c.getProducto().getPrecio(),
-                    c.getCantidad(),
-                    c.getTalla()
-                );
-            })
-            .filter(dto -> dto != null)
+            .filter(c -> c.getProducto() != null)
+            .map(c -> new CarritoDTO(
+                c.getProducto().getId(),
+                c.getProducto().getNombre(),
+                c.getProducto().getDescripcion(),
+                c.getProducto().getPrecio(),
+                c.getCantidad(),
+                c.getTalla()
+            ))
             .collect(Collectors.toList());
 
         return ResponseEntity.ok(carritoDTOs);
@@ -102,6 +108,10 @@ public class CarritoController {
                                                 @RequestParam Long idProducto,
                                                 @RequestParam String talla,
                                                 @RequestParam int cantidad) {
+        if (cantidad <= 0) {
+            return ResponseEntity.badRequest().body("La cantidad debe ser mayor que 0");
+        }
+
         CarritoId carritoId = new CarritoId(idUsuario, idProducto, talla);
         Optional<Carrito> carritoOptional = carritoRepository.findById(carritoId);
 
@@ -115,4 +125,3 @@ public class CarritoController {
         }
     }
 }
-
