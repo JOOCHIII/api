@@ -64,4 +64,12 @@ public class Productos {
 
     public List<TallaProducto> getTallas() { return tallas; }
     public void setTallas(List<TallaProducto> tallas) { this.tallas = tallas; }
+    public String getImagenPrincipal() {
+        if (fotos != null && !fotos.isEmpty()) {
+            return fotos.get(0).getUrlFoto();
+        } else {
+            return "https://tu-dominio.com/imagenes/default.png";
+        }
+    }
+
 }

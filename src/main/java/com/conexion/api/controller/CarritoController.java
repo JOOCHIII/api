@@ -74,16 +74,18 @@ public class CarritoController {
         List<Carrito> carrito = carritoRepository.findByUsuarioId(idUsuario);
 
         List<CarritoDTO> carritoDTOs = carrito.stream()
-            .filter(c -> c.getProducto() != null)
-            .map(c -> new CarritoDTO(
-                c.getProducto().getId(),
-                c.getProducto().getNombre(),
-                c.getProducto().getDescripcion(),
-                c.getProducto().getPrecio(),
-                c.getCantidad(),
-                c.getTalla()
-            ))
-            .collect(Collectors.toList());
+        	    .filter(c -> c.getProducto() != null)
+        	    .map(c -> new CarritoDTO(
+        	        c.getProducto().getId(),
+        	        c.getProducto().getNombre(),
+        	        c.getProducto().getDescripcion(),
+        	        c.getProducto().getPrecio(),
+        	        c.getCantidad(),
+        	        c.getTalla(),
+        	        c.getProducto().getImagenPrincipal()  // <-- este método debe devolver URL de imagen
+        	    ))
+        	    .collect(Collectors.toList());
+
 
         return ResponseEntity.ok(carritoDTOs);
     }
