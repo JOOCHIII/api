@@ -104,6 +104,15 @@ public class UsuarioController {
         usuarioRepository.save(nuevoUsuario);
         return "Usuario registrado correctamente";
     }
+    
+    @GetMapping("/buscar/{usuario}")
+    public Usuario getUsuarioPorNombre(@PathVariable String usuario) {
+        Usuario usuarioEncontrado = usuarioRepository.findByUsuario(usuario);
+        if (usuarioEncontrado == null) {
+            throw new RuntimeException("Usuario no encontrado");
+        }
+        return usuarioEncontrado;
+    }
 
 
 }
