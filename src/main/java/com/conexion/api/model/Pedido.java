@@ -29,7 +29,9 @@ public class Pedido {
 
     @Column(name = "estado", nullable = false)
     private String estado;
-
+    
+    @Column(name = "total", nullable = false)
+    private Double total;
 	public Long getId() {
 		return id;
 	}
@@ -62,5 +64,10 @@ public class Pedido {
 		this.estado = estado;
 	}
 
-    // Getters y setters
-}
+	public Double getTotal() {
+	    return total;
+	}
+
+	public void setTotal(Double total) {
+	    this.total = total;
+	}}

@@ -9,10 +9,12 @@ import org.springframework.web.bind.annotation.*;
 
 import com.conexion.api.model.Carrito;
 import com.conexion.api.model.DetallePedido;
+import com.conexion.api.model.NotificacionPedido;
 import com.conexion.api.model.Pedido;
 import com.conexion.api.model.Usuario;
 import com.conexion.api.repository.CarritoRepository;
 import com.conexion.api.repository.DetallePedidoRepository;
+import com.conexion.api.repository.NotificacionPedidoRepository;
 import com.conexion.api.repository.PedidoRepository;
 import com.conexion.api.repository.UsuarioRepository;
 
@@ -32,6 +34,9 @@ public class PedidoController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private NotificacionPedidoRepository notificacionPedidoRepository;
+
     // 1. Tramitar pedido
     @PostMapping("/tramitar")
     public ResponseEntity<?> tramitarPedido(@RequestParam Long idUsuario) {
@@ -50,6 +55,14 @@ public class PedidoController {
         pedido.setUsuario(usuario);
         pedido.setFecha(LocalDateTime.now());
         pedido.setEstado("pendiente");
+
+        // Calcular total
+        double total = 0.0;
+        for (Carrito item : carritoItems) {
+            total += item.getProducto().getPrecio() * item.getCantidad();
+        }
+        pedido.setTotal(total);
+
         pedido = pedidoRepository.save(pedido);
 
         // Agregar detalles del pedido
@@ -65,6 +78,15 @@ public class PedidoController {
 
         // Vaciar carrito
         carritoRepository.deleteAll(carritoItems);
+
+        // Crear notificación
+        NotificacionPedido noti = new NotificacionPedido();
+        noti.setUsuario(usuario);
+        noti.setMensaje("Tu pedido ha sido tramitado correctamente.");
+        noti.setFecha(LocalDateTime.now());
+        noti.setLeido(false);
+        noti.setPedido(pedido);
+        notificacionPedidoRepository.save(noti);
 
         return ResponseEntity.ok("Pedido tramitado con éxito");
     }
@@ -82,6 +104,15 @@ public class PedidoController {
 
         pedido.setEstado(nuevoEstado);
         pedidoRepository.save(pedido);
+
+        // Crear notificación
+        NotificacionPedido noti = new NotificacionPedido();
+        noti.setUsuario(pedido.getUsuario());
+        noti.setMensaje("El estado de tu pedido ha cambiado a: " + nuevoEstado);
+        noti.setFecha(LocalDateTime.now());
+        noti.setLeido(false);
+        noti.setPedido(pedido);
+        notificacionPedidoRepository.save(noti);
 
         return ResponseEntity.ok("Estado del pedido actualizado a: " + nuevoEstado);
     }
