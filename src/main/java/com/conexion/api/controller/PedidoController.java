@@ -1,0 +1,112 @@
+package com.conexion.api.controller;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import com.conexion.api.model.Carrito;
+import com.conexion.api.model.DetallePedido;
+import com.conexion.api.model.Pedido;
+import com.conexion.api.model.Usuario;
+import com.conexion.api.repository.CarritoRepository;
+import com.conexion.api.repository.DetallePedidoRepository;
+import com.conexion.api.repository.PedidoRepository;
+import com.conexion.api.repository.UsuarioRepository;
+
+@RestController
+@RequestMapping("/api/pedido")
+public class PedidoController {
+
+    @Autowired
+    private PedidoRepository pedidoRepository;
+
+    @Autowired
+    private DetallePedidoRepository detallePedidoRepository;
+
+    @Autowired
+    private CarritoRepository carritoRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    // 1. Tramitar pedido
+    @PostMapping("/tramitar")
+    public ResponseEntity<?> tramitarPedido(@RequestParam Long idUsuario) {
+        Usuario usuario = usuarioRepository.findById(idUsuario).orElse(null);
+        if (usuario == null) {
+            return ResponseEntity.badRequest().body("Usuario no encontrado");
+        }
+
+        List<Carrito> carritoItems = carritoRepository.findByUsuarioId(idUsuario);
+        if (carritoItems.isEmpty()) {
+            return ResponseEntity.badRequest().body("El carrito está vacío");
+        }
+
+        // Crear pedido
+        Pedido pedido = new Pedido();
+        pedido.setUsuario(usuario);
+        pedido.setFecha(LocalDateTime.now());
+        pedido.setEstado("pendiente");
+        pedido = pedidoRepository.save(pedido);
+
+        // Agregar detalles del pedido
+        for (Carrito item : carritoItems) {
+            DetallePedido detalle = new DetallePedido();
+            detalle.setPedido(pedido);
+            detalle.setProducto(item.getProducto());
+            detalle.setCantidad(item.getCantidad());
+            detalle.setTalla(item.getTalla());
+            detalle.setPrecioUnitario(item.getProducto().getPrecio());
+            detallePedidoRepository.save(detalle);
+        }
+
+        // Vaciar carrito
+        carritoRepository.deleteAll(carritoItems);
+
+        return ResponseEntity.ok("Pedido tramitado con éxito");
+    }
+
+    // 2. Cambiar estado del pedido
+    @PutMapping("/cambiar-estado")
+    public ResponseEntity<?> cambiarEstadoPedido(
+            @RequestParam Long idPedido,
+            @RequestParam String nuevoEstado) {
+
+        Pedido pedido = pedidoRepository.findById(idPedido).orElse(null);
+        if (pedido == null) {
+            return ResponseEntity.badRequest().body("Pedido no encontrado");
+        }
+
+        pedido.setEstado(nuevoEstado);
+        pedidoRepository.save(pedido);
+
+        return ResponseEntity.ok("Estado del pedido actualizado a: " + nuevoEstado);
+    }
+
+    // 3. Obtener pedidos por usuario
+    @GetMapping("/usuario")
+    public ResponseEntity<?> obtenerPedidosPorUsuario(@RequestParam Long idUsuario) {
+        Usuario usuario = usuarioRepository.findById(idUsuario).orElse(null);
+        if (usuario == null) {
+            return ResponseEntity.badRequest().body("Usuario no encontrado");
+        }
+
+        List<Pedido> pedidos = pedidoRepository.findByUsuarioId(idUsuario);
+        return ResponseEntity.ok(pedidos);
+    }
+
+    // 4. Obtener detalles de un pedido
+    @GetMapping("/detalles")
+    public ResponseEntity<?> obtenerDetallesDePedido(@RequestParam Long idPedido) {
+        Pedido pedido = pedidoRepository.findById(idPedido).orElse(null);
+        if (pedido == null) {
+            return ResponseEntity.badRequest().body("Pedido no encontrado");
+        }
+
+        List<DetallePedido> detalles = detallePedidoRepository.findByPedidoId(idPedido);
+        return ResponseEntity.ok(detalles);
+    }
+}
