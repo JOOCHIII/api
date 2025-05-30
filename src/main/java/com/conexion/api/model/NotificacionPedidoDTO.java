@@ -11,13 +11,16 @@ public class NotificacionPedidoDTO {
     private Long idPedido;
 
     // Constructor
-    public NotificacionPedidoDTO(Long id, String mensaje, LocalDateTime fecha, boolean leido, Long idPedido) {
+    public NotificacionPedidoDTO(Long id, String mensaje, LocalDateTime fecha, boolean leido, Long idUsuario, Long idPedido) {
         this.id = id;
         this.mensaje = mensaje;
         this.fecha = fecha;
         this.leido = leido;
+        this.idUsuario = idUsuario;
         this.idPedido = idPedido;
     }
+
+
 	public Long getId() {
 		return id;
 	}

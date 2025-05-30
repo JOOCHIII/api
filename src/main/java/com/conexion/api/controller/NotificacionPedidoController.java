@@ -33,11 +33,20 @@ public class NotificacionPedidoController {
         List<NotificacionPedido> notificaciones = notificacionPedidoRepository.findByUsuarioIdOrderByFechaDesc(idUsuario);
 
         List<NotificacionPedidoDTO> dtos = notificaciones.stream()
-            .map(NotificacionPedidoDTO::new)
-            .collect(Collectors.toList());
+            .map(n -> new NotificacionPedidoDTO(
+                n.getId(),
+                n.getMensaje(),
+                n.getFecha(),
+                n.isLeido(),
+                n.getUsuario() != null ? n.getUsuario().getId() : null,
+                n.getPedido() != null ? n.getPedido().getId() : null
+            ))
+            .toList();
 
         return ResponseEntity.ok(dtos);
     }
+
+
 
 
     // Marcar una notificación como leída
