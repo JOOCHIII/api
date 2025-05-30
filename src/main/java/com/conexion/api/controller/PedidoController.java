@@ -9,8 +9,10 @@ import org.springframework.web.bind.annotation.*;
 
 import com.conexion.api.model.Carrito;
 import com.conexion.api.model.DetallePedido;
+import com.conexion.api.model.ItemDetalleDTO;
 import com.conexion.api.model.NotificacionPedido;
 import com.conexion.api.model.Pedido;
+import com.conexion.api.model.PedidoDetalleDTO;
 import com.conexion.api.model.Usuario;
 import com.conexion.api.repository.CarritoRepository;
 import com.conexion.api.repository.DetallePedidoRepository;
@@ -138,6 +140,30 @@ public class PedidoController {
         }
 
         List<DetallePedido> detalles = detallePedidoRepository.findByPedidoId(idPedido);
-        return ResponseEntity.ok(detalles);
+
+        List<ItemDetalleDTO> items = detalles.stream().map(detalle -> {
+            String imagenUrl = detalle.getProducto().getFotos() != null && !detalle.getProducto().getFotos().isEmpty()
+                    ? detalle.getProducto().getFotos().get(0).getUrlFoto()
+                    : "https://tudominio.com/imagen-defecto.jpg";
+
+            return new ItemDetalleDTO(
+                    detalle.getProducto().getNombre(),
+                    detalle.getCantidad(),
+                    detalle.getTalla(),
+                    detalle.getPrecioUnitario(),
+                    imagenUrl
+            );
+        }).toList();
+
+        PedidoDetalleDTO respuesta = new PedidoDetalleDTO(
+                pedido.getId(),
+                pedido.getFecha(),
+                pedido.getEstado(),
+                pedido.getTotal(),
+                items
+        );
+
+        return ResponseEntity.ok(respuesta);
     }
+
 }
