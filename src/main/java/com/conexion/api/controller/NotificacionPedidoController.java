@@ -1,6 +1,7 @@
 package com.conexion.api.controller;
 
 import com.conexion.api.model.NotificacionPedido;
+import com.conexion.api.model.NotificacionPedidoDTO;
 import com.conexion.api.model.Usuario;
 import com.conexion.api.repository.NotificacionPedidoRepository;
 import com.conexion.api.repository.UsuarioRepository;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/notificacion-pedido")
@@ -29,8 +31,14 @@ public class NotificacionPedidoController {
         }
 
         List<NotificacionPedido> notificaciones = notificacionPedidoRepository.findByUsuarioIdOrderByFechaDesc(idUsuario);
-        return ResponseEntity.ok(notificaciones);
+
+        List<NotificacionPedidoDTO> dtos = notificaciones.stream()
+            .map(NotificacionPedidoDTO::new)
+            .collect(Collectors.toList());
+
+        return ResponseEntity.ok(dtos);
     }
+
 
     // Marcar una notificación como leída
     @PutMapping("/marcar-leida")
