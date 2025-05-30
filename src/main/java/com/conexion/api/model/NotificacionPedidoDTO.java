@@ -11,14 +11,60 @@ public class NotificacionPedidoDTO {
     private Long idPedido;
 
     // Constructor
-    public NotificacionPedidoDTO(NotificacionPedido n) {
-        this.id = n.getId();
-        this.mensaje = n.getMensaje();
-        this.fecha = n.getFecha();
-        this.leido = n.isLeido();
-        this.idUsuario = n.getUsuario() != null ? n.getUsuario().getId() : null;
-        this.idPedido = n.getPedido() != null ? n.getPedido().getId() : null;
+    public NotificacionPedidoDTO(Long id, String mensaje, LocalDateTime fecha, boolean leido, Long idPedido) {
+        this.id = id;
+        this.mensaje = mensaje;
+        this.fecha = fecha;
+        this.leido = leido;
+        this.idPedido = idPedido;
     }
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getMensaje() {
+		return mensaje;
+	}
+
+	public void setMensaje(String mensaje) {
+		this.mensaje = mensaje;
+	}
+
+	public LocalDateTime getFecha() {
+		return fecha;
+	}
+
+	public void setFecha(LocalDateTime fecha) {
+		this.fecha = fecha;
+	}
+
+	public boolean isLeido() {
+		return leido;
+	}
+
+	public void setLeido(boolean leido) {
+		this.leido = leido;
+	}
+
+	public Long getIdUsuario() {
+		return idUsuario;
+	}
+
+	public void setIdUsuario(Long idUsuario) {
+		this.idUsuario = idUsuario;
+	}
+
+	public Long getIdPedido() {
+		return idPedido;
+	}
+
+	public void setIdPedido(Long idPedido) {
+		this.idPedido = idPedido;
+	}
 
     // getters y setters...
 }
