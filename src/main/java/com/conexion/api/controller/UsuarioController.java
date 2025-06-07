@@ -1,15 +1,18 @@
 package com.conexion.api.controller;
 
+import com.conexion.api.dto.UsuarioEditar;
 import com.conexion.api.model.LoginResponse;
 import com.conexion.api.model.Usuario;
 import com.conexion.api.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -33,11 +36,24 @@ public class UsuarioController {
     public Usuario getUsuarioById(@PathVariable Long id) {
         return usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
     }
+    
+    //ELIMINAR CUENTA 
 
     @DeleteMapping("/{id}")
-    public void deleteUsuario(@PathVariable Long id) {
+    public ResponseEntity<?> deleteUsuario(@PathVariable Long id, @RequestParam String origenApp) {
+        Usuario usuario = usuarioRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        
+        if (!usuario.getOrigenApp().equals(origenApp)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("No tienes permiso para eliminar este usuario");
+        }
+        
         usuarioRepository.deleteById(id);
+        return ResponseEntity.ok("Usuario eliminado correctamente");
     }
+
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestParam String usuario, @RequestParam String contrasena,
                                    @RequestParam String origen_app) {
@@ -66,8 +82,32 @@ public class UsuarioController {
         return ResponseEntity.ok(respuesta);
     }
 
+//EDITAR DATOS DEL USUARIO
+    @PutMapping("/{id}")
+    public ResponseEntity<String> actualizarUsuario(@PathVariable Long id, @RequestBody UsuarioEditar dto) {
+        // Validar existencia del usuario
+        Optional<Usuario> optionalUsuario = usuarioRepository.findById(id);
+        if (!optionalUsuario.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
+        }
+        Usuario usuario = optionalUsuario.get();
 
-    
+        // Actualizar campos
+        usuario.setNombrecompleto(dto.getNombrecompleto());
+        usuario.setCorreo(dto.getCorreo());
+        usuario.setTelefono(dto.getTelefono());
+        usuario.setUsuario(dto.getUsuario());
+
+        if (dto.getContrasena() != null && !dto.getContrasena().isEmpty()) {
+            // Aquí cifrar la contraseña antes de guardar si usas cifrado
+            usuario.setContrasena(dto.getContrasena());
+        }
+
+        usuarioRepository.save(usuario);
+
+        return ResponseEntity.ok("Usuario actualizado correctamente");
+    }
+
    
     @GetMapping("/incidencias")
     public ResponseEntity<List<Usuario>> obtenerUsuariosIncidencias() {
