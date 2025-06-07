@@ -12,6 +12,7 @@ import com.conexion.api.model.DetallePedido;
 import com.conexion.api.model.ItemDetalleDTO;
 import com.conexion.api.model.NotificacionPedido;
 import com.conexion.api.model.Pedido;
+import com.conexion.api.model.PedidoDTO;
 import com.conexion.api.model.PedidoDetalleDTO;
 import com.conexion.api.model.Usuario;
 import com.conexion.api.repository.CarritoRepository;
@@ -165,12 +166,15 @@ public class PedidoController {
 
         return ResponseEntity.ok(respuesta);
     }
- // 5. Obtener todos los pedidos (uso de administrador)
     @GetMapping("/todos")
-    public ResponseEntity<List<Pedido>> obtenerTodosLosPedidos() {
+    public ResponseEntity<List<PedidoDTO>> obtenerTodosLosPedidos() {
         List<Pedido> pedidos = pedidoRepository.findAll();
-        return ResponseEntity.ok(pedidos);
+        List<PedidoDTO> dto = pedidos.stream()
+            .map(PedidoDTO::new)
+            .toList();
+        return ResponseEntity.ok(dto);
     }
+
 
 
 }
