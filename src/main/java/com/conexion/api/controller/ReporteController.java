@@ -152,25 +152,42 @@ public class ReporteController {
     public ResponseEntity<String> asignarReporte(
             @RequestParam int id_reporte,
             @RequestParam int id_usuario) {
+
         Optional<Reporte> reporteOpt = reporteRepo.findById(id_reporte);
         Optional<Usuario> usuarioOpt = usuarioRepo.findById((long) id_usuario);
+
         if (reporteOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reporte no encontrado");
         }
         if (usuarioOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
         }
+
         Usuario usuario = usuarioOpt.get();
+
         // ✅ Solo permitir si origen_app es "incidencias"
         if (!usuario.getOrigenApp().equalsIgnoreCase("incidencias")) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Solo se puede asignar a usuarios de tipo 'incidencias'");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Solo se puede asignar a usuarios de tipo 'incidencias'");
         }
+
         Reporte reporte = reporteOpt.get();
         reporte.setIdUsuarioAsignado(id_usuario);
         reporteRepo.save(reporte);
-        return ResponseEntity.ok("Reporte asignado correctamente");
+
+        // ✅ Crear notificación para el técnico asignado
+        Notificacion noti = new Notificacion();
+        noti.setIdUsuario(id_usuario);
+        noti.setMensaje("Se te ha asignado un nuevo reporte: " + reporte.getAsunto());
+        noti.setTipoDestino("incidencias");
+        noti.setLeido(false);
+        noti.setFecha(new Timestamp(System.currentTimeMillis()));
+        noti.setIdReporte(reporte.getId());
+        notiRepo.save(noti);
+
+        return ResponseEntity.ok("Reporte asignado y técnico notificado");
     }
-    
+
     @GetMapping("/asignados")
     public ResponseEntity<List<ReporteDTO>> obtenerReportesAsignadosPorEstado(
             @RequestParam("id_usuario") int idUsuario,
