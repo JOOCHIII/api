@@ -1,5 +1,6 @@
 package com.conexion.api.controller;
 
+import com.conexion.api.dto.UsuarioEditar;
 import com.conexion.api.model.LoginResponse;
 import com.conexion.api.model.Usuario;
 import com.conexion.api.repository.UsuarioRepository;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -80,8 +82,32 @@ public class UsuarioController {
         return ResponseEntity.ok(respuesta);
     }
 
+//EDITAR DATOS DEL USUARIO
+    @PutMapping("/api/usuarios/{id}")
+    public ResponseEntity<String> actualizarUsuario(@PathVariable Long id, @RequestBody UsuarioEditar dto) {
+        // Validar existencia del usuario
+        Optional<Usuario> optionalUsuario = usuarioRepository.findById(id);
+        if (!optionalUsuario.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
+        }
+        Usuario usuario = optionalUsuario.get();
 
-    
+        // Actualizar campos
+        usuario.setNombrecompleto(dto.getNombrecompleto());
+        usuario.setCorreo(dto.getCorreo());
+        usuario.setTelefono(dto.getTelefono());
+        usuario.setUsuario(dto.getUsuario());
+
+        if (dto.getContrasena() != null && !dto.getContrasena().isEmpty()) {
+            // Aquí cifrar la contraseña antes de guardar si usas cifrado
+            usuario.setContrasena(dto.getContrasena());
+        }
+
+        usuarioRepository.save(usuario);
+
+        return ResponseEntity.ok("Usuario actualizado correctamente");
+    }
+
    
     @GetMapping("/incidencias")
     public ResponseEntity<List<Usuario>> obtenerUsuariosIncidencias() {
