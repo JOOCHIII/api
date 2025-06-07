@@ -165,5 +165,12 @@ public class PedidoController {
 
         return ResponseEntity.ok(respuesta);
     }
+ // 5. Obtener todos los pedidos (uso de administrador)
+    @GetMapping("/todos")
+    public ResponseEntity<List<Pedido>> obtenerTodosLosPedidos() {
+        List<Pedido> pedidos = pedidoRepository.findAll();
+        return ResponseEntity.ok(pedidos);
+    }
+
 
 }
