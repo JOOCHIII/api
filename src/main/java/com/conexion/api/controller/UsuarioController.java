@@ -105,6 +105,8 @@ public class UsuarioController {
         return "Usuario registrado correctamente";
     }
     
+    
+    // OBTENER DATOS DEL USUARIO PARA EL PERFIL
     @GetMapping("/buscar/{usuario}")
     public Usuario getUsuarioPorNombre(@PathVariable String usuario) {
         Usuario usuarioEncontrado = usuarioRepository.findByUsuario(usuario);
