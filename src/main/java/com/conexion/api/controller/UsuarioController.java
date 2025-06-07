@@ -83,7 +83,7 @@ public class UsuarioController {
     }
 
 //EDITAR DATOS DEL USUARIO
-    @PutMapping("/api/usuarios/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<String> actualizarUsuario(@PathVariable Long id, @RequestBody UsuarioEditar dto) {
         // Validar existencia del usuario
         Optional<Usuario> optionalUsuario = usuarioRepository.findById(id);
