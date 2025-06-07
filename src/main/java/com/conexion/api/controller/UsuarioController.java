@@ -4,6 +4,7 @@ import com.conexion.api.model.LoginResponse;
 import com.conexion.api.model.Usuario;
 import com.conexion.api.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,14 +38,19 @@ public class UsuarioController {
     //ELIMINAR CUENTA 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> eliminarUsuario(@PathVariable Long id) {
-        if (usuarioRepository.existsById(id)) {
-            usuarioRepository.deleteById(id);
-            return ResponseEntity.noContent().build(); // 204 No Content
-        } else {
-            return ResponseEntity.status(404).body("Usuario no encontrado");
+    public ResponseEntity<?> deleteUsuario(@PathVariable Long id, @RequestParam String origenApp) {
+        Usuario usuario = usuarioRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        
+        if (!usuario.getOrigenApp().equals(origenApp)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("No tienes permiso para eliminar este usuario");
         }
+        
+        usuarioRepository.deleteById(id);
+        return ResponseEntity.ok("Usuario eliminado correctamente");
     }
+
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestParam String usuario, @RequestParam String contrasena,
