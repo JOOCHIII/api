@@ -2,6 +2,8 @@ package com.conexion.api.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class CarritoDTO {
     private Long idProducto;
     private String nombreProducto;
@@ -71,7 +73,7 @@ public class CarritoDTO {
     public void setTalla(String talla) {
         this.talla = talla;
     }
-
+    @JsonProperty("imgurl")
     public String getUrlImagen() {
         return urlImagen;
     }
