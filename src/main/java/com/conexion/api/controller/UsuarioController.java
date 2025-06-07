@@ -33,11 +33,19 @@ public class UsuarioController {
     public Usuario getUsuarioById(@PathVariable Long id) {
         return usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
     }
+    
+    //ELIMINAR CUENTA 
 
     @DeleteMapping("/{id}")
-    public void deleteUsuario(@PathVariable Long id) {
-        usuarioRepository.deleteById(id);
+    public ResponseEntity<?> eliminarUsuario(@PathVariable Long id) {
+        if (usuarioRepository.existsById(id)) {
+            usuarioRepository.deleteById(id);
+            return ResponseEntity.noContent().build(); // 204 No Content
+        } else {
+            return ResponseEntity.status(404).body("Usuario no encontrado");
+        }
     }
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestParam String usuario, @RequestParam String contrasena,
                                    @RequestParam String origen_app) {
