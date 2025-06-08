@@ -50,9 +50,10 @@ public class NotificacionPedidoController {
 
 
     // Marcar una notificación como leída
-    @PutMapping("/marcar-leida")
-    public ResponseEntity<?> marcarComoLeida(@RequestParam Long idNotificacion) {
-        NotificacionPedido notificacion = notificacionPedidoRepository.findById(idNotificacion).orElse(null);
+    // Marcar una notificación como leída (ahora con path variable)
+    @PutMapping("/{id}/leida")
+    public ResponseEntity<?> marcarComoLeida(@PathVariable Long id) {
+        NotificacionPedido notificacion = notificacionPedidoRepository.findById(id).orElse(null);
         if (notificacion == null) {
             return ResponseEntity.badRequest().body("Notificación no encontrada");
         }
