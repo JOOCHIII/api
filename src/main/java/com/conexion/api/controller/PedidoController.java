@@ -11,12 +11,14 @@ import com.conexion.api.model.Carrito;
 import com.conexion.api.model.DetallePedido;
 import com.conexion.api.model.ItemDetalleDTO;
 import com.conexion.api.model.NotificacionPedido;
+import com.conexion.api.model.NotificacionPedidoAdmin;
 import com.conexion.api.model.Pedido;
 import com.conexion.api.model.PedidoDTO;
 import com.conexion.api.model.PedidoDetalleDTO;
 import com.conexion.api.model.Usuario;
 import com.conexion.api.repository.CarritoRepository;
 import com.conexion.api.repository.DetallePedidoRepository;
+import com.conexion.api.repository.NotificacionPedidoAdminRepository;
 import com.conexion.api.repository.NotificacionPedidoRepository;
 import com.conexion.api.repository.PedidoRepository;
 import com.conexion.api.repository.UsuarioRepository;
@@ -39,6 +41,9 @@ public class PedidoController {
 
     @Autowired
     private NotificacionPedidoRepository notificacionPedidoRepository;
+    @Autowired
+    private NotificacionPedidoAdminRepository notificacionPedidoAdminRepository;
+
 
     // 1. Tramitar pedido
     @PostMapping("/tramitar")
@@ -91,7 +96,17 @@ public class PedidoController {
         noti.setPedido(pedido);
         notificacionPedidoRepository.save(noti);
 
+     // Crear notificación para el administrador
+        NotificacionPedidoAdmin notiAdmin = new NotificacionPedidoAdmin();
+        notiAdmin.setMensaje("Nuevo pedido creado por: " + usuario.getNombrecompleto());
+        notiAdmin.setFecha(LocalDateTime.now());
+        notiAdmin.setLeido(false);
+        notiAdmin.setPedido(pedido);
+        notificacionPedidoAdminRepository.save(notiAdmin);
+
         return ResponseEntity.ok("Pedido tramitado con éxito");
+
+
     }
 
     // 2. Cambiar estado del pedido
@@ -175,6 +190,25 @@ public class PedidoController {
         return ResponseEntity.ok(dto);
     }
 
+    @GetMapping("/notificaciones-admin")
+    public ResponseEntity<List<NotificacionPedidoAdmin>> obtenerNotificacionesAdmin() {
+        List<NotificacionPedidoAdmin> notificaciones = notificacionPedidoAdminRepository.findAllByOrderByFechaDesc();
+        return ResponseEntity.ok(notificaciones);
+    }
+
+    
+    @PutMapping("/notificacion-admin/leida")
+    public ResponseEntity<?> marcarNotificacionAdminComoLeida(@RequestParam Long id) {
+        NotificacionPedidoAdmin notificacion = notificacionPedidoAdminRepository.findById(id).orElse(null);
+        if (notificacion == null) {
+            return ResponseEntity.badRequest().body("Notificación no encontrada");
+        }
+
+        notificacion.setLeido(true);
+        notificacionPedidoAdminRepository.save(notificacion);
+
+        return ResponseEntity.ok("Notificación marcada como leída");
+    }
 
 
 }
