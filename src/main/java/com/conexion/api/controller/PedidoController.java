@@ -197,18 +197,17 @@ public class PedidoController {
     }
 
     
-    @PutMapping("/notificacion-admin/leida")
-    public ResponseEntity<?> marcarNotificacionAdminComoLeida(@RequestParam Long id) {
-        NotificacionPedidoAdmin notificacion = notificacionPedidoAdminRepository.findById(id).orElse(null);
-        if (notificacion == null) {
-            return ResponseEntity.badRequest().body("Notificación no encontrada");
-        }
-
-        notificacion.setLeido(true);
-        notificacionPedidoAdminRepository.save(notificacion);
-
-        return ResponseEntity.ok("Notificación marcada como leída");
+    @PutMapping("/notificacion-admin/{id}/leida")
+    public ResponseEntity<?> marcarNotificacionAdminComoLeida(@PathVariable Long id) {
+        return notificacionPedidoAdminRepository.findById(id)
+            .map(notificacion -> {
+                notificacion.setLeido(true);
+                notificacionPedidoAdminRepository.save(notificacion);
+                return ResponseEntity.ok("Notificación marcada como leída");
+            })
+            .orElseGet(() -> ResponseEntity.badRequest().body("Notificación no encontrada"));
     }
+
 
 
 }
