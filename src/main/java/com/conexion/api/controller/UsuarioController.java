@@ -6,7 +6,6 @@ import com.conexion.api.model.Usuario;
 import com.conexion.api.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -84,78 +83,29 @@ public class UsuarioController {
     }
 
 //EDITAR DATOS DEL USUARIO
-
-    // ENUM para los códigos de error
-    public enum ErrorCode {
-        NOMBRE_DUPLICADO, CORREO_DUPLICADO, TELEFONO_DUPLICADO, USUARIO_DUPLICADO
-    }
-
-    // DTO para respuesta de error
-    public static class ErrorResponse {
-        private ErrorCode error;
-        private String mensaje;
-
-        public ErrorResponse(ErrorCode error, String mensaje) {
-            this.error = error;
-            this.mensaje = mensaje;
-        }
-
-        public ErrorCode getError() { return error; }
-        public String getMensaje() { return mensaje; }
-    }
-
-    // Método PUT mejorado para actualizar usuario con validaciones y respuestas JSON
-    @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> actualizarUsuario(@PathVariable Long id, @RequestBody UsuarioEditar dto) {
+    @PutMapping("/{id}")
+    public ResponseEntity<String> actualizarUsuario(@PathVariable Long id, @RequestBody UsuarioEditar dto) {
+        // Validar existencia del usuario
         Optional<Usuario> optionalUsuario = usuarioRepository.findById(id);
         if (!optionalUsuario.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(Map.of("error", "USUARIO_NO_ENCONTRADO", "mensaje", "Usuario no encontrado"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
         }
-
         Usuario usuario = optionalUsuario.get();
 
-        // Validaciones con campos no nulos ni vacíos
-        if (dto.getNombrecompleto() != null && !dto.getNombrecompleto().isBlank()) {
-            if (usuarioRepository.existsByNombrecompletoAndIdNot(dto.getNombrecompleto(), id)) {
-                return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new ErrorResponse(ErrorCode.NOMBRE_DUPLICADO, "El nombre ya está en uso"));
-            }
-            usuario.setNombrecompleto(dto.getNombrecompleto());
-        }
-
-        if (dto.getCorreo() != null && !dto.getCorreo().isBlank()) {
-            if (usuarioRepository.existsByCorreoAndIdNot(dto.getCorreo(), id)) {
-                return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new ErrorResponse(ErrorCode.CORREO_DUPLICADO, "El correo ya está en uso"));
-            }
-            usuario.setCorreo(dto.getCorreo());
-        }
-
-        if (dto.getTelefono() != null && !dto.getTelefono().isBlank()) {
-            if (usuarioRepository.existsByTelefonoAndIdNot(dto.getTelefono(), id)) {
-                return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new ErrorResponse(ErrorCode.TELEFONO_DUPLICADO, "El teléfono ya está en uso"));
-            }
-            usuario.setTelefono(dto.getTelefono());
-        }
-
-        if (dto.getUsuario() != null && !dto.getUsuario().isBlank()) {
-            if (usuarioRepository.existsByUsuarioAndIdNot(dto.getUsuario(), id)) {
-                return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new ErrorResponse(ErrorCode.USUARIO_DUPLICADO, "El usuario ya está en uso"));
-            }
-            usuario.setUsuario(dto.getUsuario());
-        }
+        // Actualizar campos
+        usuario.setNombrecompleto(dto.getNombrecompleto());
+        usuario.setCorreo(dto.getCorreo());
+        usuario.setTelefono(dto.getTelefono());
+        usuario.setUsuario(dto.getUsuario());
 
         if (dto.getContrasena() != null && !dto.getContrasena().isEmpty()) {
-            // Aquí puedes cifrar la contraseña si usas cifrado antes de guardar
+            // Aquí cifrar la contraseña antes de guardar si usas cifrado
             usuario.setContrasena(dto.getContrasena());
         }
 
         usuarioRepository.save(usuario);
 
-        return ResponseEntity.ok(Map.of("mensaje", "Usuario actualizado correctamente"));
+        return ResponseEntity.ok("Usuario actualizado correctamente");
     }
 
    
