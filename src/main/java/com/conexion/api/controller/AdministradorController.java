@@ -98,4 +98,17 @@ public class AdministradorController {
         administradorRepository.save(administrador);
         return "Administrador registrado correctamente";
     }
+    
+    //OBTENER DATOS DEL ADMINSITRADOR 
+    @GetMapping("/usuario/{usuarioadmin}")
+    public ResponseEntity<?> getAdministradorByUsuario(@PathVariable String usuarioadmin) {
+        Administrador admin = administradorRepository.findByUsuarioadmin(usuarioadmin);
+
+        if (admin == null) {
+            return ResponseEntity.status(404).body("Administrador no encontrado");
+        }
+
+        return ResponseEntity.ok(admin);
+    }
+
 }
