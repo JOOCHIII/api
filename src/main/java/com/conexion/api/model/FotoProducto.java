@@ -20,6 +20,7 @@ public class FotoProducto {
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
+    
     public String getUrlFoto() { return urlFoto; }
     public void setUrlFoto(String urlFoto) { this.urlFoto = urlFoto; }
 
