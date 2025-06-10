@@ -210,7 +210,11 @@ public class ReporteController {
 
         return ResponseEntity.ok(dtos);
     }
-
+//OBTENER ÚLTIMOS 5 REPORTES 
+    @GetMapping("/reportes/ultimos")
+    public List<Reporte> obtenerUltimosReportes() {
+        return reporteRepo.findTop5ByOrderByFechaDesc();
+    }
 
 
     @GetMapping("/listar")
