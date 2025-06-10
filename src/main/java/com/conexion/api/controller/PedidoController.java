@@ -15,6 +15,7 @@ import com.conexion.api.model.NotificacionPedidoAdmin;
 import com.conexion.api.model.Pedido;
 import com.conexion.api.model.PedidoDTO;
 import com.conexion.api.model.PedidoDetalleDTO;
+import com.conexion.api.model.Productos;
 import com.conexion.api.model.Usuario;
 import com.conexion.api.repository.CarritoRepository;
 import com.conexion.api.repository.DetallePedidoRepository;
@@ -74,6 +75,7 @@ public class PedidoController {
         pedido = pedidoRepository.save(pedido);
 
         // Agregar detalles del pedido
+     // Agregar detalles del pedido y actualizar stock
         for (Carrito item : carritoItems) {
             DetallePedido detalle = new DetallePedido();
             detalle.setPedido(pedido);
@@ -82,7 +84,18 @@ public class PedidoController {
             detalle.setTalla(item.getTalla());
             detalle.setPrecioUnitario(item.getProducto().getPrecio());
             detallePedidoRepository.save(detalle);
+
+            // ACTUALIZAR STOCK
+            Productos producto = item.getProducto();
+            int nuevoStock = producto.getStock() - item.getCantidad();
+
+            if (nuevoStock < 0) {
+                return ResponseEntity.badRequest().body("Stock insuficiente para el producto: " + producto.getNombre());
+            }
+
+            producto.setStock(nuevoStock);
         }
+
 
         // Vaciar carrito
         carritoRepository.deleteAll(carritoItems);
