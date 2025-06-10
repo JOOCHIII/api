@@ -1,5 +1,6 @@
 package com.conexion.api.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.conexion.api.model.FotoProducto;
+import com.conexion.api.model.ProductoRequestDTO;
 import com.conexion.api.model.Productos;
 import com.conexion.api.repository.ProductosRepository;
 
@@ -45,4 +47,29 @@ public class ProductosController {
         return producto.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @PostMapping("/crear")
+    public Productos crearProducto(@RequestBody ProductoRequestDTO request) {
+        Productos nuevoProducto = new Productos();
+        nuevoProducto.setNombre(request.getNombre());
+        nuevoProducto.setDescripcion(request.getDescripcion());
+        nuevoProducto.setPrecio(request.getPrecio());
+        nuevoProducto.setStock(request.getStock());
+        nuevoProducto.setCategoria(request.getCategoria());
+        nuevoProducto.setDestacado(request.isDestacado());
+
+        // Asignar fotos
+        List<FotoProducto> fotos = new ArrayList<>();
+        if (request.getFotos() != null) {
+            for (String url : request.getFotos()) {
+                FotoProducto foto = new FotoProducto();
+                foto.setUrlFoto(url);
+                foto.setProducto(nuevoProducto);  // Relación bidireccional
+                fotos.add(foto);
+            }
+        }
+
+        nuevoProducto.setFotos(fotos);
+
+        return productosRepository.save(nuevoProducto);
+    }
 }
