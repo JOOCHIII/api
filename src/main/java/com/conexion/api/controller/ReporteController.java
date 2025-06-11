@@ -123,6 +123,44 @@ public class ReporteController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
+    //OBTIENE EL ID PERO CON EL REPORTEDTO
+    @GetMapping("/dto/{id}")
+    public ResponseEntity<ReporteDTO> getReporteDtoPorId(@PathVariable int id) {
+        Optional<Reporte> reporteOpt = reporteRepo.findById(id);
+
+        if (reporteOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        Reporte reporte = reporteOpt.get();
+        ReporteDTO dto = new ReporteDTO(reporte, null);
+
+        dto.setId(reporte.getId());
+        dto.setIdUsuario(reporte.getIdUsuario());
+        dto.setAsunto(reporte.getAsunto());
+        dto.setDescripcion(reporte.getDescripcion());
+        dto.setEstado(reporte.getEstado());
+        dto.setFecha(reporte.getFechaCreacion());
+
+        // Nombre del usuario creador
+        String nombreUsuario = usuarioRepo.findById(Long.valueOf(reporte.getIdUsuario()))
+                .map(Usuario::getNombrecompleto)
+                .orElse("Desconocido");
+        dto.setNombreUsuario(nombreUsuario);
+
+        // Nombre del usuario asignado (si existe)
+        if (reporte.getIdUsuarioAsignado() != null) {
+            String nombreAsignado = usuarioRepo.findById(Long.valueOf(reporte.getIdUsuarioAsignado()))
+                    .map(Usuario::getNombrecompleto)
+                    .orElse("No asignado");
+            dto.setNombreAsignado(nombreAsignado);
+        } else {
+            dto.setNombreAsignado("No asignado");
+        }
+
+        return ResponseEntity.ok(dto);
+    }
+
 //   Devuelve una lista de objetos Reporte puros, sin enriquecimiento (sin nombre asignado).
     @GetMapping("/estadoReporte")
     public ResponseEntity<List<Reporte>> obtenerReportesPorEstado(@RequestParam String estado) {
