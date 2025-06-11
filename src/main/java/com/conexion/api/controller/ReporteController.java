@@ -214,7 +214,7 @@ public class ReporteController {
 //OBTENER ÚLTIMOS 5 REPORTES 
     @GetMapping("/reportes/ultimos")
     public List<ReporteDTO> obtenerUltimosReportes() {
-        List<Reporte> reportes = reporteRepo.findTop5ByOrderByFechaDesc();
+        List<Reporte> reportes =reporteRepo.findTop5ByOrderByFechaCreacionDesc();
         return reportes.stream().map(this::convertirADTO).collect(Collectors.toList());
     }
     private ReporteDTO convertirADTO(Reporte reporte) {
