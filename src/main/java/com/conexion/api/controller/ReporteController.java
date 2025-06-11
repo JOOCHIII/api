@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -212,8 +213,22 @@ public class ReporteController {
     }
 //OBTENER ÚLTIMOS 5 REPORTES 
     @GetMapping("/reportes/ultimos")
-    public List<Reporte> obtenerUltimosReportes() {
-        return reporteRepo.findTop5ByOrderByFechaDesc();
+    public List<ReporteDTO> obtenerUltimosReportes() {
+        List<Reporte> reportes = reporteRepo.findTop5ByOrderByFechaDesc();
+        return reportes.stream().map(this::convertirADTO).collect(Collectors.toList());
+    }
+
+    private ReporteDTO convertirADTO(Reporte reporte) {
+        ReporteDTO dto = new ReporteDTO();
+        dto.setId(reporte.getId());
+        dto.setIdUsuario(reporte.getIdUsuario());
+        dto.setAsunto(reporte.getAsunto());
+        dto.setDescripcion(reporte.getDescripcion());
+        dto.setEstado(reporte.getEstado());
+        dto.setFecha(reporte.getFechaCreacion());
+
+
+        return dto;
     }
 
 
