@@ -217,7 +217,6 @@ public class ReporteController {
         List<Reporte> reportes = reporteRepo.findTop5ByOrderByFechaDesc();
         return reportes.stream().map(this::convertirADTO).collect(Collectors.toList());
     }
-
     private ReporteDTO convertirADTO(Reporte reporte) {
         ReporteDTO dto = new ReporteDTO();
         dto.setId(reporte.getId());

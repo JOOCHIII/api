@@ -11,4 +11,5 @@ public interface ReporteRepository extends JpaRepository<Reporte, Integer> {
     List<Reporte> findByEstadoIgnoreCase(String estado);
     List<Reporte> findByIdUsuarioAsignadoAndEstadoIgnoreCase(int idUsuario, String estado);
     List<Reporte> findTop5ByOrderByFechaDesc();
+
 }
