@@ -136,6 +136,7 @@ public class ReporteController {
         List<Reporte> reportes = reporteRepo.findByEstadoIgnoreCase(estado);
 
         List<ReporteDTO> resultado = reportes.stream().map(reporte -> {
+            // Obtener nombre del usuario asignado
             String nombreAsignado = null;
             if (reporte.getIdUsuarioAsignado() != null) {
                 nombreAsignado = usuarioRepo.findById(Long.valueOf(reporte.getIdUsuarioAsignado()))
@@ -145,11 +146,16 @@ public class ReporteController {
                 nombreAsignado = "No asignado";
             }
 
+            // Obtener nombre del usuario creador
             String nombreCreador = usuarioRepo.findById(Long.valueOf(reporte.getIdUsuario()))
                 .map(Usuario::getNombrecompleto)
                 .orElse("Desconocido");
 
-            return new ReporteDTO(reporte, nombreAsignado, nombreCreador);
+            // Construir DTO con ambos nombres (necesitas un constructor que acepte ambos)
+            ReporteDTO dto = new ReporteDTO(reporte, nombreAsignado);
+            dto.setNombreUsuario(nombreCreador); // asignar nombre creador manualmente
+
+            return dto;
         }).toList();
 
         return ResponseEntity.ok(resultado);
@@ -220,17 +226,15 @@ public class ReporteController {
         return ResponseEntity.ok(dtos);
     }
 //OBTENER ÚLTIMOS 5 REPORTES 
+
     @GetMapping("/reportes/ultimos")
     public List<ReporteDTO> obtenerUltimosReportes() {
         List<Reporte> reportes = reporteRepo.findTop5ByOrderByFechaCreacionDesc();
-        return reportes.stream()
-            .map(this::convertirADTOConNombres)
-            .collect(Collectors.toList());
+        return reportes.stream().map(this::convertirADTOConNombres).collect(Collectors.toList());
     }
 
     private ReporteDTO convertirADTOConNombres(Reporte reporte) {
         ReporteDTO dto = new ReporteDTO();
-
         dto.setId(reporte.getId());
         dto.setIdUsuario(reporte.getIdUsuario());
         dto.setAsunto(reporte.getAsunto());
@@ -240,15 +244,15 @@ public class ReporteController {
 
         // Nombre usuario creador
         String nombreUsuario = usuarioRepo.findById(Long.valueOf(reporte.getIdUsuario()))
-            .map(Usuario::getNombrecompleto)
-            .orElse("Desconocido");
+                             .map(Usuario::getNombrecompleto)
+                             .orElse("Desconocido");
         dto.setNombreUsuario(nombreUsuario);
 
         // Nombre usuario asignado
         if (reporte.getIdUsuarioAsignado() != null) {
             String nombreAsignado = usuarioRepo.findById(Long.valueOf(reporte.getIdUsuarioAsignado()))
-                .map(Usuario::getNombrecompleto)
-                .orElse("No asignado");
+                                 .map(Usuario::getNombrecompleto)
+                                 .orElse("No asignado");
             dto.setNombreAsignado(nombreAsignado);
         } else {
             dto.setNombreAsignado("No asignado");
@@ -256,6 +260,7 @@ public class ReporteController {
 
         return dto;
     }
+
 
 
 
