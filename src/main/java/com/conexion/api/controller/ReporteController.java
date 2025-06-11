@@ -138,15 +138,23 @@ public class ReporteController {
         List<ReporteDTO> resultado = reportes.stream().map(reporte -> {
             String nombreAsignado = null;
             if (reporte.getIdUsuarioAsignado() != null) {
-                nombreAsignado = usuarioRepo.findById((long) reporte.getIdUsuarioAsignado())
-                    .map(usuario -> usuario.getNombrecompleto())
+                nombreAsignado = usuarioRepo.findById(Long.valueOf(reporte.getIdUsuarioAsignado()))
+                    .map(Usuario::getNombrecompleto)
                     .orElse("No asignado");
+            } else {
+                nombreAsignado = "No asignado";
             }
-            return new ReporteDTO(reporte, nombreAsignado);
+
+            String nombreCreador = usuarioRepo.findById(Long.valueOf(reporte.getIdUsuario()))
+                .map(Usuario::getNombrecompleto)
+                .orElse("Desconocido");
+
+            return new ReporteDTO(reporte, nombreAsignado, nombreCreador);
         }).toList();
 
         return ResponseEntity.ok(resultado);
     }
+
 
     
     @PutMapping("/asignar")
@@ -212,21 +220,40 @@ public class ReporteController {
         return ResponseEntity.ok(dtos);
     }
 //OBTENER ÚLTIMOS 5 REPORTES 
-
     @GetMapping("/reportes/ultimos")
     public List<ReporteDTO> obtenerUltimosReportes() {
         List<Reporte> reportes = reporteRepo.findTop5ByOrderByFechaCreacionDesc();
-        return reportes.stream().map(this::convertirADTO).collect(Collectors.toList());
+        return reportes.stream()
+            .map(this::convertirADTOConNombres)
+            .collect(Collectors.toList());
     }
 
-    private ReporteDTO convertirADTO(Reporte reporte) {
+    private ReporteDTO convertirADTOConNombres(Reporte reporte) {
         ReporteDTO dto = new ReporteDTO();
+
         dto.setId(reporte.getId());
         dto.setIdUsuario(reporte.getIdUsuario());
         dto.setAsunto(reporte.getAsunto());
         dto.setDescripcion(reporte.getDescripcion());
         dto.setEstado(reporte.getEstado());
         dto.setFecha(reporte.getFechaCreacion());
+
+        // Nombre usuario creador
+        String nombreUsuario = usuarioRepo.findById(Long.valueOf(reporte.getIdUsuario()))
+            .map(Usuario::getNombrecompleto)
+            .orElse("Desconocido");
+        dto.setNombreUsuario(nombreUsuario);
+
+        // Nombre usuario asignado
+        if (reporte.getIdUsuarioAsignado() != null) {
+            String nombreAsignado = usuarioRepo.findById(Long.valueOf(reporte.getIdUsuarioAsignado()))
+                .map(Usuario::getNombrecompleto)
+                .orElse("No asignado");
+            dto.setNombreAsignado(nombreAsignado);
+        } else {
+            dto.setNombreAsignado("No asignado");
+        }
+
         return dto;
     }
 

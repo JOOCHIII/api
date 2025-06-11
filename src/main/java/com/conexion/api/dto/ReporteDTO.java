@@ -90,6 +90,18 @@ public class ReporteDTO {
         this.estado = reporte.getEstado();
         this.fecha=reporte.getFechaCreacion();
     }
+    
+    public ReporteDTO(Reporte reporte, String nombreAsignado, String nombreUsuario) {
+        this.id = reporte.getId();
+        this.idUsuario = reporte.getIdUsuario();
+        this.asunto = reporte.getAsunto();
+        this.descripcion = reporte.getDescripcion();
+        this.estado = reporte.getEstado();
+        this.fecha = reporte.getFechaCreacion();
+        this.nombreAsignado = nombreAsignado != null ? nombreAsignado : "No asignado";
+        this.nombreUsuario = nombreUsuario != null ? nombreUsuario : "Desconocido";
+    }
+
 
 
     public Timestamp getFecha() {          // ✅ Getter correcto
