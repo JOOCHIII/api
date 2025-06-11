@@ -212,11 +212,13 @@ public class ReporteController {
         return ResponseEntity.ok(dtos);
     }
 //OBTENER ÚLTIMOS 5 REPORTES 
+
     @GetMapping("/reportes/ultimos")
     public List<ReporteDTO> obtenerUltimosReportes() {
-        List<Reporte> reportes =reporteRepo.findTop5ByOrderByFechaCreacionDesc();
+        List<Reporte> reportes = reporteRepo.findTop5ByOrderByFechaCreacionDesc();
         return reportes.stream().map(this::convertirADTO).collect(Collectors.toList());
     }
+
     private ReporteDTO convertirADTO(Reporte reporte) {
         ReporteDTO dto = new ReporteDTO();
         dto.setId(reporte.getId());
@@ -225,10 +227,9 @@ public class ReporteController {
         dto.setDescripcion(reporte.getDescripcion());
         dto.setEstado(reporte.getEstado());
         dto.setFecha(reporte.getFechaCreacion());
-
-
         return dto;
     }
+
 
 
     @GetMapping("/listar")
