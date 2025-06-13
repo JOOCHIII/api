@@ -78,10 +78,10 @@ public class ProductosController {
         return productosRepository.count();
     }
 
-    // Productos en borrador (ej. si `stock == 0` los consideras "borrador")
-    @GetMapping("/borrador")
-    public Long contarBorradores() {
-        return productosRepository.countByStock(0);
+    @GetMapping("/count/sin-stock")
+    public ResponseEntity<Long> contarProductosSinStock() {
+        long totalSinStock = productosRepository.countByStock(0);
+        return ResponseEntity.ok(totalSinStock);
     }
 
 }

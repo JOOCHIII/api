@@ -29,6 +29,7 @@ public class Productos {
     private int stock;
     private String categoria;
     private boolean destacado;
+    private boolean borrador;
 
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JsonManagedReference
@@ -73,5 +74,11 @@ public class Productos {
             return "https://tu-dominio.com/imagenes/default.png";
         }
     }
+	public boolean isBorrador() {
+		return borrador;
+	}
+	public void setBorrador(boolean borrador) {
+		this.borrador = borrador;
+	}
 
 }
