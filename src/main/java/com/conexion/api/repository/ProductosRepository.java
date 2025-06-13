@@ -9,8 +9,9 @@ import com.conexion.api.model.Productos;
 
 public interface ProductosRepository extends JpaRepository<Productos, Long> {
 	long countByStock(int stock);
-	@Query("SELECT DISTINCT p.categoria FROM Producto p")
+	@Query(value = "SELECT DISTINCT categoria FROM productos", nativeQuery = true)
 	List<String> findDistinctCategorias();
+
 
 
 }
