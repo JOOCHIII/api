@@ -73,13 +73,13 @@ public class ProductosController {
         return productosRepository.save(nuevoProducto);
     }
  // Total de productos
-    @GetMapping("/api/productos/count")
+    @GetMapping("/count")
     public Long contarProductos() {
         return productosRepository.count();
     }
 
     // Productos en borrador (ej. si `stock == 0` los consideras "borrador")
-    @GetMapping("/api/productos/count/borrador")
+    @GetMapping("/borrador")
     public Long contarBorradores() {
         return productosRepository.countByStock(0);
     }
