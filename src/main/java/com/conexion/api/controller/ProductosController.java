@@ -83,5 +83,10 @@ public class ProductosController {
         long totalSinStock = productosRepository.countByStock(0);
         return ResponseEntity.ok(totalSinStock);
     }
+    @GetMapping("/categorias")
+    public List<String> obtenerCategorias() {
+        return productosRepository.findDistinctCategorias();
+    }
+
 
 }
